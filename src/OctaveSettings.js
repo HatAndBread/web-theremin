@@ -10,25 +10,32 @@ export const OctaveSettings = (props) => {
   const [veryHigh, setVeryHigh] = useState(false);
   const [exHigh, setExHigh] = useState(false);
   const [exLowStyle, setExLowStyle] = useState({
-    backgroundColor: 'rgb(0,255,0)'
+    backgroundColor: 'rgb(0,255,0)',
+    color: 'black'
   });
   const [veryLowStyle, setVeryLowStyle] = useState({
-    backgroundColor: 'rgb(0,255,0)'
+    backgroundColor: 'rgb(0,255,0)',
+    color: 'black'
   });
   const [lowStyle, setLowStyle] = useState({
-    backgroundColor: 'rgb(0,255,0)'
+    backgroundColor: 'rgb(0,255,0)',
+    color: 'black'
   });
   const [mediumStyle, setMediumStyle] = useState({
-    backgroundColor: 'rgb(255,0,0)'
+    backgroundColor: 'rgb(255,0,0)',
+    color: 'black'
   });
   const [highStyle, setHighStyle] = useState({
-    backgroundColor: 'rgb(0,255,0)'
+    backgroundColor: 'rgb(0,255,0)',
+    color: 'black'
   });
   const [veryHighStyle, setVeryHighStyle] = useState({
-    backgroundColor: 'rgb(0,255,0)'
+    backgroundColor: 'rgb(0,255,0)',
+    color: 'black'
   });
   const [exHighStyle, setExHighStyle] = useState({
-    backgroundColor: 'rgb(0,255,0)'
+    backgroundColor: 'rgb(0,255,0)',
+    color: 'black'
   });
 
   useEffect(() => {
@@ -44,14 +51,14 @@ export const OctaveSettings = (props) => {
         setHigh(false);
         setVeryHigh(false);
         setExHigh(false);
-        setExHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setVeryHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setMediumStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setVeryLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setExLowStyle({ backgroundColor: 'rgb(255,0,0)' });
-        setOctave(1 / 64);
+        setExHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setVeryHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setMediumStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setVeryLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setExLowStyle({ backgroundColor: 'rgb(255,0,0)', color: 'black' });
+        setOctave(1 / 8);
 
         break;
       case 'Very Low':
@@ -62,14 +69,14 @@ export const OctaveSettings = (props) => {
         setHigh(false);
         setVeryHigh(false);
         setExHigh(false);
-        setExHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setVeryHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setMediumStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setVeryLowStyle({ backgroundColor: 'rgb(255,0,0)' });
-        setExLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setOctave(1 / 16);
+        setExHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setVeryHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setMediumStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setVeryLowStyle({ backgroundColor: 'rgb(255,0,0)', color: 'black' });
+        setExLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setOctave(1 / 4);
         break;
       case 'Low':
         setExLow(false);
@@ -79,14 +86,14 @@ export const OctaveSettings = (props) => {
         setHigh(false);
         setVeryHigh(false);
         setExHigh(false);
-        setExHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setVeryHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setMediumStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setLowStyle({ backgroundColor: 'rgb(255,0,0)' });
-        setVeryLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setExLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setOctave(1 / 4);
+        setExHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setVeryHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setMediumStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setLowStyle({ backgroundColor: 'rgb(255,0,0)', color: 'black' });
+        setVeryLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setExLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setOctave(1 / 2);
 
         break;
       case 'Medium':
@@ -97,13 +104,13 @@ export const OctaveSettings = (props) => {
         setHigh(false);
         setVeryHigh(false);
         setExHigh(false);
-        setExHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setVeryHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setMediumStyle({ backgroundColor: 'rgb(255,0,0)' });
-        setLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setVeryLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setExLowStyle({ backgroundColor: 'rgb(0,255,0)' });
+        setExHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setVeryHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setMediumStyle({ backgroundColor: 'rgb(255,0,0)', color: 'black' });
+        setLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setVeryLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setExLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
         setOctave(1);
         break;
       case 'High':
@@ -114,13 +121,13 @@ export const OctaveSettings = (props) => {
         setHigh(true);
         setVeryHigh(false);
         setExHigh(false);
-        setExHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setVeryHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setHighStyle({ backgroundColor: 'rgb(255,0,0)' });
-        setMediumStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setVeryLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setExLowStyle({ backgroundColor: 'rgb(0,255,0)' });
+        setExHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setVeryHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setHighStyle({ backgroundColor: 'rgb(255,0,0)', color: 'black' });
+        setMediumStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setVeryLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setExLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
         setOctave(2);
         break;
       case 'Very High':
@@ -131,13 +138,13 @@ export const OctaveSettings = (props) => {
         setHigh(false);
         setVeryHigh(true);
         setExHigh(false);
-        setExHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setVeryHighStyle({ backgroundColor: 'rgb(255,0,0)' });
-        setHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setMediumStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setVeryLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setExLowStyle({ backgroundColor: 'rgb(0,255,0)' });
+        setExHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setVeryHighStyle({ backgroundColor: 'rgb(255,0,0)', color: 'black' });
+        setHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setMediumStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setVeryLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setExLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
         setOctave(4);
         break;
       default:
@@ -148,13 +155,13 @@ export const OctaveSettings = (props) => {
         setHigh(false);
         setVeryHigh(false);
         setExHigh(true);
-        setExHighStyle({ backgroundColor: 'rgb(255,0,0)' });
-        setVeryHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setHighStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setMediumStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setVeryLowStyle({ backgroundColor: 'rgb(0,255,0)' });
-        setExLowStyle({ backgroundColor: 'rgb(0,255,0)' });
+        setExHighStyle({ backgroundColor: 'rgb(255,0,0)', color: 'black' });
+        setVeryHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setHighStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setMediumStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setVeryLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
+        setExLowStyle({ backgroundColor: 'rgb(0,255,0)', color: 'black' });
         setOctave(8);
         break;
     }
@@ -168,8 +175,6 @@ export const OctaveSettings = (props) => {
       <SelectorButt buttText={'High'} state={high} changer={changer} style={highStyle} />
       <SelectorButt buttText={'Very High'} state={veryHigh} changer={changer} style={veryHighStyle} />
       <SelectorButt buttText={'Extremely High'} state={exHigh} changer={changer} style={exHighStyle} />
-      <br></br>
-      <OkButt hide={props.hide} />
     </div>
   );
 };
@@ -183,10 +188,4 @@ const SelectorButt = (props) => {
       {props.buttText}
     </button>
   );
-};
-const OkButt = (props) => {
-  const clicked = () => {
-    props.hide();
-  };
-  return <button onClick={clicked}>OK</button>;
 };

@@ -259,7 +259,7 @@ export const DroneSettings = (props) => {
     <div>
       <div style={{ display: props.display }}>
         <div style={{ display: 'inline-flex', width: '100vw' }}>
-          <div style={{ borderStyle: 'groove', borderColor: 'slategrey', flexGrow: 1, backgroundColor: 'lightsalmon' }}>
+          <div style={{ borderStyle: 'groove', borderColor: 'slategrey', flexGrow: 1 }}>
             <IndividualDrone
               assignedNote={noteForDrone1}
               theNote={assignNote1}
@@ -269,7 +269,7 @@ export const DroneSettings = (props) => {
               revertBackToNotAlreadyStarted={revertBackToNotAlreadyStarted}
             />
           </div>
-          <div style={{ borderStyle: 'groove', borderColor: 'slategrey', flexGrow: 1, backgroundColor: 'lightsalmon' }}>
+          <div style={{ borderStyle: 'groove', borderColor: 'slategrey', flexGrow: 1 }}>
             <IndividualDrone
               assignedNote={noteForDrone2}
               theNote={assignNote2}
@@ -279,7 +279,7 @@ export const DroneSettings = (props) => {
               revertBackToNotAlreadyStarted={revertBackToNotAlreadyStarted}
             />
           </div>
-          <div style={{ borderStyle: 'groove', borderColor: 'slategrey', flexGrow: 1, backgroundColor: 'lightsalmon' }}>
+          <div style={{ borderStyle: 'groove', borderColor: 'slategrey', flexGrow: 1 }}>
             <IndividualDrone
               assignedNote={noteForDrone3}
               theNote={assignNote3}
@@ -294,32 +294,62 @@ export const DroneSettings = (props) => {
         <OkButt hide={props.hide} />
       </div>
       <br />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'C'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'C#'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'D'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Eb'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'E'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'F'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'F#'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'G'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Ab'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'A'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Bb'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'B'} />
-      <br />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Cm'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'C#m'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Dm'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Ebm'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Em'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Fm'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'F#m'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Gm'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Abm'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Am'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Bbm'} />
-      <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Bm'} />
-      <ChordsOffButt />
+      <div
+        style={{
+          position: 'fixed',
+          width: '100vw',
+          bottom: '0',
+          left: '0',
+          margin: '0',
+          padding: '0'
+        }}
+      >
+        <div
+          style={{
+            display: 'inline-flex',
+            width: '100%',
+            justifyContent: 'space-evenly',
+            flexDirection: 'row',
+            alignContent: 'stretch'
+          }}
+        >
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'C'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'C#'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'D'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Eb'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'E'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'F'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'F#'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'G'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Ab'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'A'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Bb'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'B'} />
+        </div>
+        <br />
+        <div
+          style={{
+            display: 'inline-flex',
+            width: '100%',
+            justifyContent: 'space-evenly',
+            flexDirection: 'row',
+            alignContent: 'stretch'
+          }}
+        >
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Cm'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'C#m'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Dm'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Ebm'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Em'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Fm'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'F#m'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Gm'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Abm'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Am'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Bbm'} />
+          <ChordButton beingPlayedNow={beingPlayedNow} chordPlayed={chordPlayed} myChord={'Bm'} />
+        </div>
+      </div>
     </div>
   );
 };
@@ -332,7 +362,7 @@ const IndividualDrone = (props) => {
   const [octave3, setOctave3] = useState(false);
   const [currentNote, setCurrentNote] = useState('C');
   const [currentOctave, setCurrentOctave] = useState('4');
-  const [volumeText, setVolumeText] = useState('-10');
+  const [volumeText, setVolumeText] = useState('-35');
   const [pitchValue, setPitchValue] = useState(0);
 
   useEffect(() => {
@@ -526,7 +556,7 @@ const IndividualDrone = (props) => {
           texty={'Volume'}
           belongTo={props.name}
           updateVolumeText={updateVolumeText}
-          defaultValue={-20}
+          defaultValue={-35}
           currentVolume={volumeText}
         />
         <br />
@@ -600,7 +630,7 @@ const IndividualDrone = (props) => {
 const VolumeFader = (props) => {
   const volumeChange = (e) => {
     updateDroneMachineVolume(props.belongTo, e.target.value);
-    props.updateVolumeText(Number(e.target.value) + 10);
+    props.updateVolumeText(Number(e.target.value));
   };
   return (
     <div>
@@ -704,26 +734,11 @@ const ChordButton = (props) => {
     props.chordPlayed(props.myChord);
   };
   return (
-    <button style={{ backgroundColor: myColor, color: 'snow' }} onClick={clicked}>
+    <button
+      style={{ backgroundColor: myColor, color: 'snow', height: '10vh', flexGrow: '1', padding: '0', margin: '0' }}
+      onClick={clicked}
+    >
       {props.myChord}
-    </button>
-  );
-};
-
-const ChordsOffButt = (props) => {
-  const [chordsOn, setChordsOn] = useState(false);
-  const handleClick = () => {
-    if (chordsOn) {
-      setChordsOn(false);
-    } else {
-      setChordsOn(true);
-    }
-  };
-  return (
-    <button style={{ backgroundColor: 'black', color: 'snow' }} onClick={handleClick}>
-      <span role="img" aria-label="an x">
-        ❌
-      </span>
     </button>
   );
 };

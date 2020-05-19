@@ -1,83 +1,72 @@
 import * as Tone from 'tone';
 import { s2pd } from './s2pd.js';
 import { friends } from './friends.js';
-import { changeDroneIntonation } from './droneInstruments';
-
-///TONE SETTINGS
-
-Tone.context.latencyHint = 'balanced';
+import { changeDroneIntonation, theLimiter } from './droneInstruments';
 
 /////****************************************SCREEN */
+let toolbarSize = 0;
+let appStarted = false;
+
+export const startApp = () => {
+  appStarted = true;
+};
+export const toolbarSizeChanged = (size) => {
+  toolbarSize = size;
+
+  windowResizer();
+};
+
 const reSizeMusicBoard = () => {
-  musicBoard.width = s2pd.canvas.width;
-  musicBoard.height = s2pd.canvas.height;
-  if (justIntonation) {
-    drawBoard(justRatios);
+  if (appStarted) {
+    musicBoard.width = s2pd.canvas.width;
+    musicBoard.height = s2pd.canvas.height;
+    if (justIntonation) {
+      drawBoard(justRatios);
+    }
+    if (!justIntonation) {
+      drawBoard(equalTempRatios);
+    }
   }
-  if (!justIntonation) {
-    drawBoard(equalTempRatios);
+  if (!appStarted) {
+    s2pd.canvas.width = Math.floor(window.innerWidth);
+    s2pd.canvas.height = Math.floor(window.innerHeight);
+    s2pd.width = s2pd.canvas.width;
+    s2pd.height = s2pd.canvas.height;
+
+    if (justIntonation) {
+      drawBoard(justRatios);
+    }
+    if (!justIntonation) {
+      drawBoard(equalTempRatios);
+    }
   }
 };
 
-if (window.innerWidth < window.innerHeight) {
-  s2pd.orientation = 'portrait';
-}
-if (window.innerWidth >= window.innerHeight) {
-  s2pd.orientation = 'landscape';
-}
+const windowResizer = () => {
+  if (appStarted) {
+    s2pd.canvas.width = Math.floor(window.innerWidth);
+    s2pd.canvas.height = Math.floor(window.innerHeight * 0.8) - toolbarSize;
+    s2pd.width = s2pd.canvas.width;
+    s2pd.height = s2pd.canvas.height;
+    reSizeMusicBoard();
+    initialize();
+  } else {
+    s2pd.canvas.width = Math.floor(window.innerWidth);
+    s2pd.canvas.height = Math.floor(window.innerHeight);
+    s2pd.width = s2pd.canvas.width;
+    s2pd.height = s2pd.canvas.height;
 
-if (s2pd.orientation === 'landscape') {
-  s2pd.canvas.width = Math.floor(window.innerWidth);
-  s2pd.canvas.height = Math.floor(window.innerHeight);
-  s2pd.width = s2pd.canvas.width;
-  s2pd.height = s2pd.canvas.height;
-}
-if (s2pd.orientation === 'portrait') {
-  s2pd.canvas.width = Math.floor(window.innerWidth);
-  s2pd.canvas.height = Math.floor(window.innerHeight);
-  s2pd.width = s2pd.canvas.width;
-  s2pd.height = s2pd.canvas.height;
-}
-window.addEventListener('resize', function () {
-  if (s2pd.orientation === 'portrait' && window.innerWidth >= window.innerHeight) {
-    s2pd.canvas.width = Math.floor(window.innerWidth);
-    s2pd.canvas.height = Math.floor(window.innerHeight);
-    s2pd.width = s2pd.canvas.width;
-    s2pd.height = s2pd.canvas.height;
-    s2pd.orientation = 'landscape';
-    reSizeMusicBoard();
-    initialize();
+    if (justIntonation) {
+      drawBoard(justRatios);
+    }
+    if (!justIntonation) {
+      drawBoard(equalTempRatios);
+    }
   }
-  if (s2pd.orientation === 'portrait' && window.innerWidth < window.innerHeight) {
-    s2pd.canvas.width = Math.floor(window.innerWidth);
-    s2pd.canvas.height = Math.floor(window.innerHeight);
-    s2pd.width = s2pd.canvas.width;
-    s2pd.height = s2pd.canvas.height;
-    s2pd.orientation = 'portrait';
-    reSizeMusicBoard();
-    initialize();
-  }
-  if (s2pd.orientation === 'landscape' && window.innerWidth < window.innerHeight) {
-    s2pd.canvas.width = Math.floor(window.innerWidth);
-    s2pd.canvas.height = Math.floor(window.innerHeight);
-    s2pd.width = s2pd.canvas.width;
-    s2pd.height = s2pd.canvas.height;
-    s2pd.orientation = 'portrait';
-    reSizeMusicBoard();
-    initialize();
-  }
-  if (s2pd.orientation === 'landscape' && window.innerWidth >= window.innerHeight) {
-    s2pd.canvas.width = Math.floor(window.innerWidth);
-    s2pd.canvas.height = Math.floor(window.innerHeight);
-    s2pd.width = s2pd.canvas.width;
-    s2pd.height = s2pd.canvas.height;
-    s2pd.orientation = 'landscape';
-    reSizeMusicBoard();
-    initialize();
-  }
-  reSizeMusicBoard();
-  initialize();
-});
+};
+
+window.addEventListener('resize', windowResizer);
+window.addEventListener('orientationchange', windowResizer);
 ///////////////////***********************************MUSIC LOGIC START */
 ///////////////////***********************************MUSIC LOGIC START */
 ///////////////////***********************************MUSIC LOGIC START */
@@ -103,25 +92,45 @@ export const makePedalTone = () => {
   if (thereminData.pedalToneAdded) {
     s2pd.exit = false;
     gameLoop();
-  }
-  if (!thereminData.pedalToneAdded) {
+  } else {
     thereminData.firstTimePedalAdded = true;
-    if (!s2pd.exit) {
+    if (!thereminData.infinityMachine) {
+      // If infinity  AND pedal are off stop loop.
       s2pd.exit = true;
+      pedalDude.xPos = -10000;
+      initialize();
+    }
+    if (thereminData.infinityMachine) {
+      // Keep loop going if infinity is on.
       pedalDude.xPos = -10000;
       initialize();
     }
   }
 };
 
+const removeInfinity = () => {
+  s2pd.exit = true;
+  thereminData.infinityMachine = false;
+  console.log('current synth before function:');
+  console.log(currentSynth);
+  currentSynth.forEach((index) => {
+    index.triggerRelease(thereminData.trailOff);
+    setTimeout(function () {
+      index.dispose();
+    }, thereminData.trailOff * 5000);
+  });
+  currentSynth.splice(0, currentSynth.length);
+  console.log('At the end of function:');
+  console.log(currentSynth);
+};
+
 export const addInfinity = () => {
-  thereminData.infinityMachine ? (thereminData.infinityMachine = false) : (thereminData.infinityMachine = true);
+  thereminData.infinityMachine ? removeInfinity() : (thereminData.infinityMachine = true);
   if (thereminData.infinityMachine) {
     thereminData.intinityMachineFirstTime = true;
   }
   if (!thereminData.infinityMachine) {
     thereminData.intinityMachineFirstTime = false;
-    stopTheremin();
   }
 };
 
@@ -143,28 +152,6 @@ musicBoard.makeHoldable();
 s2pd.finalize(musicBoard);
 const thereminDude = new s2pd.Circle('stupid', -600, -200, s2pd.width / 37, s2pd.getRandomColor());
 
-const playTheremin = () => {
-  if (thereminData.sine) {
-    theremin.sine.oscillator.triggerAttack();
-  }
-  if (thereminData.square) {
-    theremin.square.oscillator.triggerAttack();
-  }
-  if (thereminData.sawtooth) {
-    theremin.sawtooth.oscillator.triggerAttack();
-  }
-  if (thereminData.triangle) {
-    theremin.triangle.oscillator.triggerAttack();
-  }
-};
-
-const stopTheremin = () => {
-  theremin.sine.oscillator.triggerRelease(); //// PERHAPS MAKE TRAIL OFF NUMBER A USER VARIABLE?
-  theremin.square.oscillator.triggerRelease();
-  theremin.sawtooth.oscillator.triggerRelease();
-  theremin.triangle.oscillator.triggerRelease();
-};
-
 const thereminData = {
   allEffectsOff: true,
   musicStarted: false,
@@ -172,17 +159,16 @@ const thereminData = {
   square: false,
   sawtooth: false,
   triangle: false,
-  sineVolume: -10,
-  squareVolume: -10,
-  sawtoothVolume: -10,
-  triangleVolume: -10,
+  sineVolume: -25,
+  squareVolume: -25,
+  sawtoothVolume: -25,
+  triangleVolume: -25,
   attack: 0.7,
   sustain: 0.7,
   decay: 0.1,
   release: 0.7,
   randomWarble: false,
   randomWarbleValue: 0,
-  hiccup: false,
   noFx: true,
   vibratoDepth: 0.09,
   vibratoFrequency: 6,
@@ -203,7 +189,8 @@ const thereminData = {
   firstTimePedalAdded: true,
   infinityMachine: false,
   intinityMachineFirstTime: true,
-  effectsWetness: 1
+  effectsWetness: 1,
+  trailOff: '+.2'
 };
 
 //////***** EFFECTS */
@@ -217,8 +204,8 @@ export const removeEffect = (effect) => {
     case 'Crusher':
       thereminData.crusherOn = false;
       crusher.disconnect();
-      thereminVolume.disconnect();
-      thereminVolume.toMaster();
+
+      pitchShifter.connect(theLimiter);
 
       break;
     case 'PitchShifter':
@@ -241,10 +228,6 @@ export const removeEffect = (effect) => {
       thereminData.vibratoDepth = 0;
       thereminData.vibratoFrequency = 0;
       break;
-    case 'Hiccup':
-      thereminData.hiccup = false;
-      hiccup.disconnect();
-      break;
     default:
       break;
   }
@@ -265,9 +248,9 @@ export const addEffect = (effect, currentLevel1, currentLevel2) => {
     thereminData.crusherOn = true;
     thereminData.crusherAmount = currentLevel1;
 
-    thereminVolume.disconnect();
-    thereminVolume.connect(crusher);
-    crusher.toMaster();
+    pitchShifter.disconnect();
+    pitchShifter.connect(crusher);
+    crusher.connect(theLimiter);
   }
   if (effect === 'PitchShifter') {
     thereminData.pitchShifterOn = true;
@@ -288,36 +271,29 @@ export const addEffect = (effect, currentLevel1, currentLevel2) => {
     thereminData.randomWarble = true;
     thereminData.randomWarbleValue = currentLevel1;
   }
-  if (effect === 'Hiccup') {
-    thereminData.hiccup = true;
-    hiccup.toMaster();
-  }
 };
+
 const crusher = new Tone.BitCrusher(thereminData.crusherAmount);
-
-const lowPassFilter = new Tone.Filter({
-  type: 'lowpass',
-  frequency: 450,
-  rolloff: -12,
-  Q: 1,
-  gain: 0
-});
-const comp = new Tone.Compressor(-30, 12);
-
-const thereminVolume = new Tone.Volume(-10).toMaster();
 
 const pitchShifter = new Tone.PitchShift(thereminData.pitchShifterAmount);
 const pingPong = new Tone.FeedbackDelay(thereminData.delayTime, thereminData.delayFeedback);
 
 const vibrato = new Tone.Vibrato(thereminData.vibratoFrequency, thereminData.vibratoDepth);
+const lowpass = new Tone.Filter({
+  type: 'lowpass',
+  frequency: 523,
+  rolloff: -12,
+  Q: 1,
+  gain: 0
+});
+const comp = new Tone.Compressor();
 const dist = new Tone.Distortion(thereminData.distortionAmount).chain(
+  lowpass,
   vibrato,
+  comp,
   pingPong,
   pitchShifter,
-
-  lowPassFilter,
-  comp,
-  thereminVolume
+  theLimiter
 );
 vibrato.wet.value = thereminData.effectsWetness;
 crusher.wet.value = thereminData.effectsWetness;
@@ -354,7 +330,7 @@ export const turnNoiseOn = () => {
   pinkDude.yPos = 100;
   pinky.start();
   noiseOn = true;
-  noiseVolume.toMaster();
+  noiseVolume.connect(theLimiter);
 };
 
 export const turnNoiseOff = () => {
@@ -383,7 +359,7 @@ export const turnOnMike = () => {
     .open()
     .then(function () {
       console.log('available');
-      microphone.chain(micPitchShifter, micPingPong, micVolume, Tone.Master);
+      microphone.chain(micPitchShifter, micPingPong, micVolume, theLimiter);
     })
     .catch((e) => {
       alert(e);
@@ -405,111 +381,30 @@ export const updateMikeVolume = (value) => {
   micVolume.volume.value = value;
 };
 
-const hiccup = new Tone.Synth({
-  oscillator: {
-    type: 'sine'
-  },
-  envelope: {
-    attack: 0.005,
-    decay: 0.1,
-    sustain: 0.3,
-    release: 1
-  }
-});
-hiccup.volume.value = -10;
-const theremin = {
-  sine: {
-    oscillator: new Tone.MonoSynth({
-      oscillator: {
-        type: 'sine'
-      },
-      envelope: {
-        attack: thereminData.attack,
-        decay: thereminData.decay,
-        sustain: thereminData.sustain,
-        release: thereminData.release
-      }
-    }).connect(dist),
-
-    vol: thereminData.sineVolume,
-    on: true
-  },
-  square: {
-    oscillator: new Tone.MonoSynth({
-      oscillator: {
-        type: 'square'
-      },
-      envelope: {
-        attack: thereminData.attack,
-        decay: thereminData.decay,
-        sustain: thereminData.sustain,
-        release: thereminData.release
-      }
-    }).connect(dist),
-    vol: thereminData.squareVolume,
-    on: false
-  },
-  sawtooth: {
-    oscillator: new Tone.MonoSynth({
-      oscillator: {
-        type: 'sawtooth'
-      },
-      envelope: {
-        attack: thereminData.attack,
-        decay: thereminData.decay,
-        sustain: thereminData.sustain,
-        release: thereminData.release
-      }
-    }).connect(dist),
-    vol: thereminData.sawtoothVolume,
-    on: false
-  },
-  triangle: {
-    oscillator: new Tone.MonoSynth({
-      oscillator: {
-        type: 'triangle'
-      },
-      envelope: {
-        attack: thereminData.attack,
-        decay: thereminData.decay,
-        sustain: thereminData.sustain,
-        release: thereminData.release
-      }
-    }).connect(dist),
-    vol: thereminData.triangleVolume,
-    on: false
-  }
-};
-//initial volumes
-theremin.sine.oscillator.volume.value = -10;
-theremin.square.oscillator.volume.value = -10;
-theremin.sawtooth.oscillator.volume.value = -10;
-theremin.triangle.oscillator.volume.value = -10;
-
 export const updateTheremin = () => {
-  theremin.sine.oscillator.volume.value = thereminData.sineVolume;
-  theremin.square.oscillator.volume.value = thereminData.squareVolume;
-  theremin.sawtooth.oscillator.volume.value = thereminData.sawtoothVolume;
-  theremin.triangle.oscillator.volume.value = thereminData.triangleVolume;
-  theremin.sine.oscillator.envelope.attack = thereminData.attack;
-  theremin.sine.oscillator.envelope.sustain = thereminData.sustain;
-  theremin.sine.oscillator.envelope.decay = thereminData.decay;
-  theremin.sine.oscillator.envelope.release = thereminData.release;
-  theremin.square.oscillator.envelope.attack = thereminData.attack;
-  theremin.square.oscillator.envelope.sustain = thereminData.sustain;
-  theremin.square.oscillator.envelope.decay = thereminData.decay;
-  theremin.square.oscillator.envelope.release = thereminData.release;
-  theremin.sawtooth.oscillator.envelope.attack = thereminData.attack;
-  theremin.sawtooth.oscillator.envelope.sustain = thereminData.sustain;
-  theremin.sawtooth.oscillator.envelope.decay = thereminData.decay;
-  theremin.sawtooth.oscillator.envelope.release = thereminData.release;
-  theremin.triangle.oscillator.envelope.attack = thereminData.attack;
-  theremin.triangle.oscillator.envelope.sustain = thereminData.sustain;
-  theremin.triangle.oscillator.envelope.decay = thereminData.decay;
-  theremin.triangle.oscillator.envelope.release = thereminData.release;
+  for (let i = 0; i < currentSynth.length; i++) {
+    function updater(whichVolumeToUpdate) {
+      currentSynth[i].volume.value = whichVolumeToUpdate;
+      currentSynth[i].envelope.attack = thereminData.attack;
+      currentSynth[i].envelope.sustain = thereminData.sustain;
+      currentSynth[i].envelope.decay = thereminData.decay;
+      currentSynth[i].envelope.release = thereminData.release;
+    }
+    if (thereminData.sine) {
+      updater(thereminData.sineVolume);
+    }
+    if (thereminData.square) {
+      updater(thereminData.squareVolume);
+    }
+    if (thereminData.sawtooth) {
+      updater(thereminData.sawtoothVolume);
+    }
+    if (thereminData.triangle) {
+      updater(thereminData.triangleVolume);
+    }
+  }
   dist.distortion = thereminData.distortionAmount * 0.1;
   pitchShifter.pitch = thereminData.pitchShifterAmount;
-
   pingPong.delayTime.value = thereminData.delayTime;
   vibrato.frequency.value = thereminData.vibratoFrequency;
   vibrato.depth.value = thereminData.vibratoDepth;
@@ -517,33 +412,61 @@ export const updateTheremin = () => {
   crusher.bits = thereminData.crusherAmount;
   crusher.wet.value = thereminData.effectsWetness;
   pitchShifter.wet.value = thereminData.effectsWetness;
-
   pingPong.wet.value = thereminData.effectsWetness;
   dist.wet.value = thereminData.effectsWetness;
   vibrato.wet.value = thereminData.effectsWetness;
 };
-const frequencyChanger = (type, warble, octave) => {
+
+const returnStartFrequency = (octave) => {
+  /// THIS IS USED TO RETURN THE FREQUENCY THAT THE THEREMIN SHOULD START ON
+  if (thereminDude.xPos >= 523.26 && thereminDude.xPos < 1046.52) {
+    return Math.floor(thereminDude.xPos * octave);
+  } else if (thereminDude.xPos < 523.26) {
+    return Math.floor((thereminDude.xPos + 261.3 - thereminDude.xPos / 2) * octave);
+  } else if (thereminDude.xPos >= 1046.52 && thereminDude.xPos) {
+    return Math.floor((thereminDude.xPos - (1046.52 - thereminDude.xPos)) * octave);
+  } else {
+    return 440;
+  }
+};
+
+const frequencyChanger = (warble, octave) => {
+  // THIS IS USED TO UPDATE THE FREQUENCY OF THE THEREMIN WHEN USER MOVES FINGER
   if (thereminData.randomWarble) {
     if (thereminDude.xPos >= 523.26 && thereminDude.xPos < 1046.52) {
-      type.oscillator.frequency.value = Math.floor(thereminDude.xPos * octave) + warble;
+      currentSynth.forEach((index) => {
+        index.frequency.value = Math.floor(thereminDude.xPos * octave) + warble;
+      });
     } else if (thereminDude.xPos < 523.26) {
-      type.oscillator.frequency.value =
-        Math.floor((thereminDude.xPos + 261.3 - thereminDude.xPos / 2) * octave) + warble;
+      currentSynth.forEach((index) => {
+        index.frequency.value = Math.floor((thereminDude.xPos + 261.3 - thereminDude.xPos / 2) * octave) + warble;
+      });
     } else if (thereminDude.xPos >= 1046.52 && thereminDude.xPos) {
-      type.oscillator.frequency.value =
-        Math.floor((thereminDude.xPos - (1046.52 - thereminDude.xPos)) * octave) + warble;
+      currentSynth.forEach((index) => {
+        index.frequency.value = Math.floor((thereminDude.xPos - (1046.52 - thereminDude.xPos)) * octave) + warble;
+      });
     } else {
-      type.oscillator.frequency.value = Math.floor(thereminDude.xPos * octave) + warble;
+      currentSynth.forEach((index) => {
+        index.frequency.value = Math.floor(thereminDude.xPos * octave) + warble;
+      });
     }
   } else {
     if (thereminDude.xPos >= 523.26 && thereminDude.xPos < 1046.52) {
-      type.oscillator.frequency.value = Math.floor(thereminDude.xPos * octave);
+      currentSynth.forEach((index) => {
+        index.frequency.value = Math.floor(thereminDude.xPos * octave);
+      });
     } else if (thereminDude.xPos < 523.26) {
-      type.oscillator.frequency.value = Math.floor((thereminDude.xPos + 261.3 - thereminDude.xPos / 2) * octave);
+      currentSynth.forEach((index) => {
+        index.frequency.value = Math.floor((thereminDude.xPos + 261.3 - thereminDude.xPos / 2) * octave);
+      });
     } else if (thereminDude.xPos >= 1046.52 && thereminDude.xPos) {
-      type.oscillator.frequency.value = Math.floor((thereminDude.xPos - (1046.52 - thereminDude.xPos)) * octave);
+      currentSynth.forEach((index) => {
+        index.frequency.value = Math.floor((thereminDude.xPos - (1046.52 - thereminDude.xPos)) * octave);
+      });
     } else {
-      type.oscillator.frequency.value = Math.floor(thereminDude.xPos * octave);
+      currentSynth.forEach((index) => {
+        index.frequency.value = Math.floor(thereminDude.xPos * octave);
+      });
     }
   }
 };
@@ -682,23 +605,213 @@ mike.makeDraggable();
 s2pd.finalize(mike);
 s2pd.finalize(pinkDude);
 
-//***************************** EVENT LISTENERS */
+//*********************CREATE SYNTHS*************////
+//*********************CREATE SYNTHS*************////
+//*********************CREATE SYNTHS*************////
+//*********************CREATE SYNTHS*************////
+//*********************CREATE SYNTHS*************////
+//*********************CREATE SYNTHS*************////
+//*********************CREATE SYNTHS*************////
+//*********************CREATE SYNTHS*************////
+//*********************CREATE SYNTHS*************////
+//*********************CREATE SYNTHS*************////
+//*********************CREATE SYNTHS*************////
+//*********************CREATE SYNTHS*************////
+//*********************CREATE SYNTHS*************////
+
+const currentSynth = [];
+
+export const onBeingLetUp = (heldObject) => {
+  function howManyThingsToPop() {
+    if (!thereminData.sine && !thereminData.square && !thereminData.sawtooth && !thereminData.triangle) {
+      return 0;
+    }
+    if (thereminData.sine && !thereminData.square && !thereminData.sawtooth && !thereminData.triangle) {
+      return 1;
+    }
+    if (!thereminData.sine && thereminData.square && !thereminData.sawtooth && !thereminData.triangle) {
+      return 1;
+    }
+    if (!thereminData.sine && !thereminData.square && thereminData.sawtooth && !thereminData.triangle) {
+      return 1;
+    }
+    if (!thereminData.sine && !thereminData.square && !thereminData.sawtooth && thereminData.triangle) {
+      return 1;
+    }
+    if (thereminData.sine && thereminData.square && !thereminData.sawtooth && !thereminData.triangle) {
+      return 2;
+    }
+    if (thereminData.sine && !thereminData.square && thereminData.sawtooth && !thereminData.triangle) {
+      return 2;
+    }
+    if (thereminData.sine && !thereminData.square && !thereminData.sawtooth && thereminData.triangle) {
+      return 2;
+    }
+    if (!thereminData.sine && thereminData.square && thereminData.sawtooth && !thereminData.triangle) {
+      return 2;
+    }
+    if (!thereminData.sine && thereminData.square && !thereminData.sawtooth && thereminData.triangle) {
+      return 2;
+    }
+    if (!thereminData.sine && !thereminData.square && thereminData.sawtooth && thereminData.triangle) {
+      return 2;
+    }
+    if (!thereminData.sine && thereminData.square && thereminData.sawtooth && thereminData.triangle) {
+      return 3;
+    }
+    if (thereminData.sine && !thereminData.square && thereminData.sawtooth && thereminData.triangle) {
+      return 3;
+    }
+    if (thereminData.sine && thereminData.square && !thereminData.sawtooth && thereminData.triangle) {
+      return 3;
+    }
+    if (thereminData.sine && thereminData.square && thereminData.sawtooth && !thereminData.triangle) {
+      return 3;
+    }
+    if (thereminData.sine && thereminData.square && thereminData.sawtooth && thereminData.triangle) {
+      return 4;
+    }
+  }
+  if (heldObject === musicBoard && !thereminData.infinityMachine) {
+    if (!s2pd.exit) {
+      s2pd.exit = true;
+      if (thereminData.sine || thereminData.square || thereminData.sawtooth || thereminData.triangle) {
+        try {
+          if (!thereminData.pedalToneAdded) {
+            for (let i = 0; i < howManyThingsToPop(); i++) {
+              let lastSynth = currentSynth.pop();
+              lastSynth.triggerRelease(thereminData.trailOff);
+              setTimeout(function () {
+                lastSynth.dispose();
+                console.log('this is the synth array: ');
+                console.log(currentSynth);
+              }, thereminData.trailOff * 5000);
+            }
+          }
+          if (thereminData.pedalToneAdded && !thereminData.infinityMachine) {
+            for (let i = 0; i < howManyThingsToPop(); i++) {
+              let lastSynth = currentSynth.pop();
+              lastSynth.triggerRelease(thereminData.trailOff);
+              setTimeout(function () {
+                lastSynth.dispose();
+                console.log('this is the synth array: ');
+                console.log(currentSynth);
+              }, thereminData.trailOff * 5000);
+            }
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+    }
+  }
+};
 export const onBeingHeldDown = (heldObject) => {
+  /// What to do if user touches canvas
+  const synthFactory = (waveType) => {
+    /// Function to create a new synth each time user touches canvas.
+    try {
+      const freshSynth = new Tone.MonoSynth({
+        oscillator: {
+          type: waveType
+        },
+        envelope: {
+          attack: thereminData.attack,
+          decay: thereminData.decay,
+          sustain: thereminData.sustain,
+          release: thereminData.release
+        }
+      }).connect(dist);
+      if (thereminData.sine) {
+        freshSynth.volume.value = thereminData.sineVolume;
+      }
+      if (thereminData.square) {
+        freshSynth.volume.value = thereminData.squareVolume;
+      }
+      if (thereminData.sawtooth) {
+        freshSynth.volume.value = thereminData.sawtoothVolume;
+      }
+      if (thereminData.triangle) {
+        freshSynth.volume.value = thereminData.triangleVolume;
+      }
+      freshSynth.triggerAttack(returnStartFrequency(thereminData.octaveChanger));
+      currentSynth.unshift(freshSynth);
+
+      console.log(currentSynth);
+    } catch {
+      console.log('doesnt exist');
+    }
+  };
   if (heldObject === musicBoard) {
-    if (s2pd.exit) {
-      s2pd.exit = false;
-      gameLoop();
+    if (s2pd.exit && !thereminData.pedalToneAdded) {
+      if (s2pd.exit) {
+        s2pd.exit = false;
+        gameLoop();
+      }
+
+      if (thereminData.sine) {
+        ////// If user holds on canvas create new synths.
+
+        // make sure that length never exceeds one
+        synthFactory('sine');
+      }
+      if (thereminData.square) {
+        synthFactory('square');
+      }
+      if (thereminData.sawtooth) {
+        synthFactory('sawtooth');
+      }
+      if (thereminData.triangle) {
+        synthFactory('triangle');
+      }
+    }
+    if (thereminData.pedalToneAdded && !thereminData.infinityMachine && currentSynth.length === 0) {
+      if (s2pd.exit) {
+        s2pd.exit = false;
+        gameLoop();
+      }
+
+      if (thereminData.sine) {
+        ////// If user holds on canvas create new synths.
+
+        // make sure that length never exceeds one
+        synthFactory('sine');
+      }
+      if (thereminData.square) {
+        synthFactory('square');
+      }
+      if (thereminData.sawtooth) {
+        synthFactory('sawtooth');
+      }
+      if (thereminData.triangle) {
+        synthFactory('triangle');
+      }
+    }
+    if (thereminData.infinityMachine && currentSynth.length === 0) {
+      if (s2pd.exit) {
+        s2pd.exit = false;
+        gameLoop();
+      }
+
+      if (thereminData.sine) {
+        ////// If user holds on canvas create new synths.
+
+        // make sure that length never exceeds one
+        synthFactory('sine');
+      }
+      if (thereminData.square) {
+        synthFactory('square');
+      }
+      if (thereminData.sawtooth) {
+        synthFactory('sawtooth');
+      }
+      if (thereminData.triangle) {
+        synthFactory('triangle');
+      }
     }
   }
 };
 
-export const onBeingLetUp = (heldObject) => {
-  if (heldObject === musicBoard && !thereminData.pedalToneAdded) {
-    if (!s2pd.exit) {
-      s2pd.exit = true;
-    }
-  }
-};
 //****************************************LOOP START******************************** /
 //****************************************LOOP START******************************** /
 //****************************************LOOP START******************************** /
@@ -770,6 +883,10 @@ export const gameLoop = () => {
   //**********************//**********************//**********************
   //**********************//**********************
   //**********************
+  let warble = 0;
+  if (thereminData.randomWarble) {
+    warble = s2pd.randomBetween(-thereminData.randomWarbleValue, thereminData.randomWarbleValue);
+  }
 
   if (noiseOn) {
     noiseVolume.volume.value = Math.floor(pinkDude.yPos / 10) * -1;
@@ -825,37 +942,12 @@ export const gameLoop = () => {
   if (musicBoard.holdDown && !thereminData.infinityMachine && !mike.dragging && !pinkDude.dragging) {
     stopCounter = 0;
     startCounter += 1;
-    if (s2pd.touchX === 0) {
-      /// This is necessary because touch will always be zero if no touch is present. Will ensure touch will be used when present.
+    if (s2pd.touchDetected) {
+      thereminDude.xPos = s2pd.touchMoveX;
+      thereminDude.yPos = s2pd.touchMoveY;
+    } else {
       thereminDude.xPos = s2pd.mouseXcurrent;
       thereminDude.yPos = s2pd.mouseYcurrent;
-    } else {
-      if (s2pd.touchMoveX > 0) {
-        thereminDude.xPos = s2pd.touchMoveX;
-        thereminDude.yPos = s2pd.touchMoveY;
-      } else {
-        thereminDude.xPos = s2pd.touchX;
-        thereminDude.yPos = s2pd.touchY;
-      }
-    }
-
-    if (startCounter === 1) {
-      const multiplier = [-1, 0];
-      playTheremin();
-      if (thereminData.hiccup) {
-        try {
-          hiccup.triggerAttackRelease(
-            Math.floor(
-              (Math.floor(thereminDude.xPos) *
-                (multiplier[s2pd.randomBetween(0, 1)] + justRatios[s2pd.randomBetween(0, justRatios.length)])) /
-                2
-            ),
-            '8n'
-          );
-        } catch (e) {
-          console.log(e);
-        }
-      }
     }
   }
 
@@ -863,7 +955,6 @@ export const gameLoop = () => {
     stopCounter += 1;
     startCounter = 0;
     if (stopCounter === 1) {
-      stopTheremin();
     }
     if (thereminData.pedalToneAdded) {
       thereminDude.xPos = pedalDude.xPos + pedalDude.width / 2;
@@ -871,94 +962,23 @@ export const gameLoop = () => {
   }
 
   if (musicBoard.holdDown && thereminData.infinityMachine && !mike.dragging && !pinkDude.dragging) {
-    if (thereminData.hiccup) {
-      let ran = s2pd.randomBetween(0, 20);
-      if (ran === 3) {
-        try {
-          const multiplier = [-1, 0];
-          hiccup.triggerAttackRelease(
-            Math.floor(
-              (Math.floor(thereminDude.xPos) *
-                (multiplier[s2pd.randomBetween(0, 1)] + justRatios[s2pd.randomBetween(0, justRatios.length)])) /
-                2
-            ),
-            '8n'
-          );
-        } catch (e) {
-          console.log(e);
-        }
-      }
-    }
-
     if (thereminData.intinityMachineFirstTime) {
-      playTheremin();
       thereminData.intinityMachineFirstTime = false;
     }
 
-    if (s2pd.touchX === 0) {
-      /// This is necessary because touch will always be zero if no touch is present. Will ensure touch will be used when present.
+    if (s2pd.touchDetected) {
+      thereminDude.xPos = s2pd.touchMoveX;
+      thereminDude.yPos = s2pd.touchMoveY;
+    } else {
       thereminDude.xPos = s2pd.mouseXcurrent;
       thereminDude.yPos = s2pd.mouseYcurrent;
-    } else {
-      if (s2pd.touchMoveX > 0) {
-        thereminDude.xPos = s2pd.touchMoveX;
-        thereminDude.yPos = s2pd.touchMoveY;
-      } else {
-        thereminDude.xPos = s2pd.touchX;
-        thereminDude.yPos = s2pd.touchY;
-      }
     }
   }
 
-  //********************SET NEW POSITION OF USER FINGER ************************************ */
-  fingerTracker.currentPosition = thereminDude.xPos;
-  //***************IF FINGER HAS MOVED UPDATE FREQUENCY */
-
+  fingerTracker.currentPosition = thereminDude.xPos; // set current position of user's finer
   if (fingerTracker.currentPosition !== fingerTracker.priorPosition) {
-    if (thereminData.noFx) {
-      if (thereminData.sine) {
-        frequencyChanger(theremin.sine, thereminData.warbleCounter, thereminData.octaveChanger);
-      }
-      if (thereminData.square) {
-        frequencyChanger(theremin.square, thereminData.warbleCounter, thereminData.octaveChanger);
-      }
-      if (thereminData.sawtooth) {
-        frequencyChanger(theremin.sawtooth, thereminData.warbleCounter, thereminData.octaveChanger);
-      }
-      if (thereminData.triangle) {
-        frequencyChanger(theremin.triangle, thereminData.warbleCounter, thereminData.octaveChanger);
-      }
-    }
-  }
-  if (thereminData.randomWarble) {
-    if (thereminData.sine) {
-      frequencyChanger(
-        theremin.sine,
-        s2pd.randomBetween(-thereminData.randomWarbleValue, thereminData.randomWarbleValue),
-        thereminData.octaveChanger
-      );
-    }
-    if (thereminData.square) {
-      frequencyChanger(
-        theremin.square,
-        s2pd.randomBetween(-thereminData.randomWarbleValue, thereminData.randomWarbleValue),
-        thereminData.octaveChanger
-      );
-    }
-    if (thereminData.sawtooth) {
-      frequencyChanger(
-        theremin.sawtooth,
-        s2pd.randomBetween(-thereminData.randomWarbleValue, thereminData.randomWarbleValue),
-        thereminData.octaveChanger
-      );
-    }
-    if (thereminData.triangle) {
-      frequencyChanger(
-        theremin.triangle,
-        s2pd.randomBetween(-thereminData.randomWarbleValue, thereminData.randomWarbleValue),
-        thereminData.octaveChanger
-      );
-    }
+    //// if user's finger has moved compared with last time through loop
+    frequencyChanger(warble, thereminData.octaveChanger); //update the frequency of the theremin
   }
 
   if (s2pd.exit) {
@@ -969,3 +989,15 @@ export const gameLoop = () => {
     requestAnimationFrame(gameLoop);
   }
 };
+s2pd.canvas.width = Math.floor(window.innerWidth);
+s2pd.canvas.height = Math.floor(window.innerHeight);
+s2pd.width = s2pd.canvas.width;
+s2pd.height = s2pd.canvas.height;
+
+if (justIntonation) {
+  drawBoard(justRatios);
+}
+if (!justIntonation) {
+  drawBoard(equalTempRatios);
+}
+s2pd.canvas.style.backgroundColor = `rgb(30,10,10)`;

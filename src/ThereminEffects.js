@@ -29,7 +29,6 @@ export const ThereminEffects = (props) => {
   const [crusherDisplay, setCrusherDisplay] = useState({
     display: 'none'
   });
-  const [hiccup, setHiccup] = useState(false);
   const onChange = (which) => {
     console.log(which + ' somethig changed');
     if (which === 'Distortion') {
@@ -86,15 +85,6 @@ export const ThereminEffects = (props) => {
         removeEffect(which);
       }
     }
-    if (which === 'Hiccup') {
-      if (!hiccup) {
-        addEffect(which);
-        setHiccup(true);
-      } else {
-        removeEffect(which);
-        setHiccup(false);
-      }
-    }
   };
   useEffect(() => {
     updateTheremin();
@@ -114,10 +104,6 @@ export const ThereminEffects = (props) => {
             step={1}
             defaultValue={100}
           />
-        </div>
-
-        <div style={{ borderStyle: 'groove', textAlign: 'left' }}>
-          <EffectSelector name="Hiccup" onChange={onChange} />
         </div>
       </div>
       <div
@@ -328,4 +314,3 @@ const OkButt = (props) => {
   };
   return <button onClick={clicked}>OK</button>;
 };
-

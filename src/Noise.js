@@ -21,8 +21,6 @@ export const Noise = (props) => {
         <MikeButt texty={micText} changeMicText={changeMicText} micOn={micOn} />
         <Fader belongTo={'mic'} texty={'Microphone Volume'} min={-100} max={0} defaultValue={-10} />
       </div>
-      <br />
-      <OkButt hide={props.hide} />
     </div>
   );
 };
@@ -55,10 +53,4 @@ const Fader = (props) => {
       <label>{props.texty}</label>
     </div>
   );
-};
-const OkButt = (props) => {
-  const clicked = () => {
-    props.hide();
-  };
-  return <button onClick={clicked}>OK</button>;
 };
