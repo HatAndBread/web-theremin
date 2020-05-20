@@ -7,6 +7,18 @@ Tone.setContext(audioContext);
 
 Tone.Master.volume.value = -10; // turning this too high causes big problems!!!
 Tone.context.latencyHint = 'balanced'; //// make this  a variable with warning???
+export const changeLatency = (which) => {
+  if (which === 'balanced') {
+    Tone.context.latencyHint = 'balanced';
+  } else {
+    Tone.context.latencyHint = 'interactive';
+  }
+};
+
+export const changeMaster = (value) => {
+  Tone.Master.volume.value = value;
+  console.log(value);
+};
 
 export const theLimiter = new Tone.Limiter({
   threshold: -12

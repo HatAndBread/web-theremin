@@ -635,7 +635,15 @@ const VolumeFader = (props) => {
   return (
     <div>
       <label>{props.texty}</label>
-      <input type="range" defaultValue={props.defaultValue} min={-50} max={-10} step={1} onChange={volumeChange} />
+      <input
+        className="fader"
+        type="range"
+        defaultValue={props.defaultValue}
+        min={-50}
+        max={-10}
+        step={1}
+        onChange={volumeChange}
+      />
       <label>{props.currentVolume}</label>
     </div>
   );
@@ -649,7 +657,7 @@ const PitchFader = (props) => {
   return (
     <div>
       <label>{props.texty}</label>
-      <input type="range" onChange={pitchChange} min={0} max={12} defaultValue={props.defaultValue} />
+      <input className="fader" type="range" onChange={pitchChange} min={0} max={12} defaultValue={props.defaultValue} />
       <label>{props.currentNote + props.currentOctave}</label>
     </div>
   );
@@ -667,7 +675,7 @@ const ControlledPitchFader = (props) => {
   return (
     <div>
       <label>{props.texty}</label>
-      <input type="range" onChange={pitchChange} min={0} max={12} value={props.pitchValue} />
+      <input className="fader" type="range" onChange={pitchChange} min={0} max={12} value={props.pitchValue} />
       <label>{props.currentNote + props.currentOctave}</label>
     </div>
   );

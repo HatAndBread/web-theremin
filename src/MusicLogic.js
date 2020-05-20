@@ -150,8 +150,7 @@ const pedalDude = new s2pd.Text(
 pedalDude.makeDraggable();
 musicBoard.makeHoldable();
 s2pd.finalize(musicBoard);
-const thereminDude = new s2pd.Circle('stupid', -600, -200, s2pd.width / 37, s2pd.getRandomColor());
-
+const thereminDude = new s2pd.Circle('stupid', -600, -200, s2pd.width / 37, s2pd.getRandomColor(), 6);
 const thereminData = {
   allEffectsOff: true,
   musicStarted: false,
@@ -193,6 +192,10 @@ const thereminData = {
   trailOff: '+.2'
 };
 
+export const changeTrailOff = (value) => {
+  thereminData.trailOff = `+${value}`;
+  console.log(thereminData.trailOff);
+};
 //////***** EFFECTS */
 export const removeEffect = (effect) => {
   switch (effect) {
@@ -498,6 +501,7 @@ export const updateIntonation = (which) => {
 };
 const justRatios = [1, 25 / 24, 9 / 8, 6 / 5, 5 / 4, 4 / 3, 45 / 32, 3 / 2, 8 / 5, 5 / 3, 9 / 5, 15 / 8, 2];
 const equalTempRatios = [1, 1.06, 1.12, 1.19, 1.26, 1.33, 1.41, 1.5, 1.59, 1.68, 1.78, 1.89, 2];
+const theNotes = ['C', 'C#', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B', 'C'];
 
 const fretThickener = (i) => {
   switch (i) {
@@ -545,6 +549,7 @@ const fretPainter = (i) => {
 };
 
 const frets = [];
+const noteGarbage = [];
 const drawBoard = (whichArray) => {
   for (let i = 0; i < frets.length; i++) {
     if (frets[i]) {
@@ -558,14 +563,30 @@ const drawBoard = (whichArray) => {
       }
     }
   }
+  for (let i = 0; i < noteGarbage.length; i++) {
+    if (noteGarbage[i]) {
+      noteGarbage[i].xPos = -10000;
+    }
+  }
+  for (let i = 0; i < noteGarbage.length; i++) {
+    if (noteGarbage[i]) {
+      if (noteGarbage[i].xPos < -10) {
+        noteGarbage[i] = null;
+      }
+    }
+  }
 
   for (let i = frets.length; i >= 0; i--) {
     // Go backwards to splice an array with a for loop
     if (!frets[i]) {
       frets.splice(i, 1);
     }
+  } /////////////////DELETE OLD FRETS
+  for (let i = noteGarbage.length; i >= 0; i--) {
+    if (!noteGarbage[i]) {
+      noteGarbage.splice(i, 1);
+    }
   }
-
   for (let i = 0; i < whichArray.length; i++) {
     const fret = new s2pd.Rectangle(
       'fret',
@@ -577,11 +598,38 @@ const drawBoard = (whichArray) => {
     );
     s2pd.finalize(fret);
     frets.push(fret);
+
+    const noteText = new s2pd.Text(
+      'noteText',
+      theNotes[i],
+      523.26 * whichArray[i] - 523.26 - 5,
+      36,
+      'Arial',
+      24,
+      s2pd.getRandomColor(),
+      1
+    );
+    noteGarbage.push(noteText);
+
+    s2pd.finalize(noteText);
   }
   for (let i = 0; i < whichArray.length; i++) {
     const fret = new s2pd.Rectangle('fret', 523.26 * whichArray[i], 0, fretThickener(i), s2pd.height, fretPainter(i));
     s2pd.finalize(fret);
     frets.push(fret);
+    const noteText = new s2pd.Text(
+      'noteText',
+      theNotes[i],
+      523.26 * whichArray[i] - 5,
+      36,
+      'Arial',
+      24,
+      s2pd.getRandomColor(),
+      1
+    );
+    noteGarbage.push(noteText);
+
+    s2pd.finalize(noteText);
   }
   for (let i = 0; i < whichArray.length; i++) {
     const fret = new s2pd.Rectangle(
@@ -594,6 +642,19 @@ const drawBoard = (whichArray) => {
     );
     s2pd.finalize(fret);
     frets.push(fret);
+    const noteText = new s2pd.Text(
+      'noteText',
+      theNotes[i],
+      526.26 * whichArray[i] + 526.26 - 5,
+      36,
+      'Arial',
+      24,
+      s2pd.getRandomColor(),
+      1
+    );
+
+    noteGarbage.push(noteText);
+    s2pd.finalize(noteText);
   }
 };
 drawBoard(justRatios);
@@ -883,6 +944,9 @@ export const gameLoop = () => {
   //**********************//**********************//**********************
   //**********************//**********************
   //**********************
+
+  noteGarbage.forEach((index) => (index.color = s2pd.getRandomColor()));
+
   let warble = 0;
   if (thereminData.randomWarble) {
     warble = s2pd.randomBetween(-thereminData.randomWarbleValue, thereminData.randomWarbleValue);
@@ -916,7 +980,7 @@ export const gameLoop = () => {
   if (thereminData.pedalToneAdded) {
     if (thereminData.firstTimePedalAdded) {
       pedalDude.xPos = 523.26 - pedalDude.width / 2;
-      pedalDude.yPos = s2pd.height / 2;
+      pedalDude.yPos = 0 + pedalDude.height / 2;
       thereminData.firstTimePedalAdded = false;
     }
   } else {
@@ -924,16 +988,26 @@ export const gameLoop = () => {
   }
   ////INCREASE AND DECREASE SIZE OF USER FINGER CIRCLE
 
-  if (thereminDude.radius <= s2pd.height / 38) {
+  if (thereminDude.radius <= s2pd.height / 12) {
     thereminDude.ascending = true;
   }
-  if (thereminDude.radius >= s2pd.height / 28) {
+  if (thereminDude.radius >= s2pd.height / 8) {
     thereminDude.ascending = false;
   }
   if (thereminDude.ascending) {
-    thereminDude.radius += 0.2;
+    thereminDude.color = `rgb(${s2pd.randomBetween(150, 255)},${s2pd.randomBetween(10, 180)},${s2pd.randomBetween(
+      0,
+      100
+    )})`;
+    thereminDude.radius += 0.3 + s2pd.randomBetween(-0.5, 0.5);
+    thereminDude.thickness = s2pd.randomBetween(1, 14);
   } else {
-    thereminDude.radius -= 0.2;
+    thereminDude.color = `rgb(${s2pd.randomBetween(150, 255)},${s2pd.randomBetween(0, 100)},${s2pd.randomBetween(
+      0,
+      100
+    )})`;
+    thereminDude.radius -= 0.3 + s2pd.randomBetween(-0.5, 0.5);
+    thereminDude.thickness = s2pd.randomBetween(1, 30);
   }
 
   //********************GET PRIOR POSITION OF USER FINGER ************************************ */

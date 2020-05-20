@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { UpdateThereminData, updateTheremin, addEffect, removeEffect } from './MusicLogic.js';
+import { changeTrailOff } from './MusicLogic';
 
 let distortionLevel = 0;
 let pitchShifterLevel = 0;
@@ -91,19 +92,12 @@ export const ThereminEffects = (props) => {
   });
   return (
     <div style={{ display: props.display }}>
-      <div
-        style={{ display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center', backgroundColor: 'lightSalmon' }}
-      >
+      <div style={{ display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center' }}>
         <div style={{ borderStyle: 'groove', textAlign: 'left' }}>
-          <Fader
-            name="Wetness"
-            min={1}
-            max={100}
-            label={'Effects wetness'}
-            onChange={onChange}
-            step={1}
-            defaultValue={100}
-          />
+          <Fader name="Wetness" min={1} max={100} label={'Wet:'} onChange={onChange} step={1} defaultValue={100} />
+        </div>
+        <div style={{ borderStyle: 'groove', textAlign: 'left' }}>
+          <Trail />
         </div>
       </div>
       <div
@@ -114,38 +108,38 @@ export const ThereminEffects = (props) => {
           justifyContent: 'center'
         }}
       >
-        <div style={{ borderStyle: 'groove', textAlign: 'left', backgroundColor: 'lightSalmon' }}>
+        <div style={{ borderStyle: 'groove', textAlign: 'left' }}>
           <EffectSelector defaultChecked={true} name="Vibrato" onChange={onChange} />
           <div style={vibratoDisplay}>
             <VibratoControls name="Vibrato"></VibratoControls>
           </div>
         </div>
-        <div style={{ borderStyle: 'groove', textAlign: 'left', backgroundColor: 'lightSalmon' }}>
+        <div style={{ borderStyle: 'groove', textAlign: 'left' }}>
           <EffectSelector defaultChecked={false} name="Pulverizer" onChange={onChange} />
           <div style={pulverizerDisplay}>
             <PulverizerControls name="Pulverizer" />
           </div>
         </div>
-        <div style={{ borderStyle: 'groove', textAlign: 'left', backgroundColor: 'lightSalmon' }}>
+        <div style={{ borderStyle: 'groove', textAlign: 'left' }}>
           <EffectSelector defaultChecked={false} name="Distortion" onChange={onChange} />
           <div style={distortionDisplay}>
             <DistortionControls name="Distortion"></DistortionControls>
           </div>
         </div>
-        <div style={{ borderStyle: 'groove', textAlign: 'left', backgroundColor: 'lightSalmon' }}>
+        <div style={{ borderStyle: 'groove', textAlign: 'left' }}>
           <EffectSelector defaultChecked={false} name="Crusher" onChange={onChange} />
           <div style={crusherDisplay}>
             <CrusherControls name="Crusher"></CrusherControls>
           </div>
         </div>
-        <div style={{ borderStyle: 'groove', textAlign: 'left', backgroundColor: 'lightSalmon' }}>
+        <div style={{ borderStyle: 'groove', textAlign: 'left' }}>
           <EffectSelector defaultChecked={false} name="Delay" onChange={onChange} />
 
           <div style={delayDisplay}>
             <DelayControls name="Delay"></DelayControls>
           </div>
         </div>
-        <div style={{ borderStyle: 'groove', textAlign: 'left', backgroundColor: 'lightSalmon' }}>
+        <div style={{ borderStyle: 'groove', textAlign: 'left' }}>
           <EffectSelector defaultChecked={false} name="PitchShifter" onChange={onChange} />
           <div style={pitchShifterDisplay}>
             <PitchShifterControls name="PitchShifter"></PitchShifterControls>
@@ -173,7 +167,9 @@ const EffectSelector = (props) => {
 };
 
 const VibratoControls = (props) => {
-  const onChange = () => {};
+  const onChange = (newValue) => {
+    updateTheremin();
+  };
   return (
     <div>
       <Fader name="VibratoRange" min={0} max={100} label={'Depth'} onChange={onChange} step={1} defaultValue={9} />
@@ -269,13 +265,13 @@ const Fader = (props) => {
     }
     if (props.name === 'VibratoRange') {
       UpdateThereminData({ warbleCounter: 0 });
-      UpdateThereminData({ warbleRange: newValue * 0.01 });
+      UpdateThereminData({ vibratoDepth: newValue * 0.01 });
       updateTheremin();
       vibratoLevel1 = newValue * 0.01;
     }
     if (props.name === 'VibratoSpeed') {
       UpdateThereminData({ warbleCounter: 0 });
-      UpdateThereminData({ warbleSpeed: newValue });
+      UpdateThereminData({ vibratoFrequency: newValue });
       updateTheremin();
       vibratoLevel2 = newValue;
     }
@@ -295,7 +291,9 @@ const Fader = (props) => {
   };
   return (
     <div>
+      <label>{props.label}</label>
       <input
+        className="fader"
         type="range"
         max={props.max}
         min={props.min}
@@ -303,7 +301,6 @@ const Fader = (props) => {
         defaultValue={props.defaultValue}
         step={props.step}
       ></input>
-      <label>{props.label}</label>
     </div>
   );
 };
@@ -313,4 +310,16 @@ const OkButt = (props) => {
     props.hide();
   };
   return <button onClick={clicked}>OK</button>;
+};
+
+const Trail = (props) => {
+  const handleChange = (e) => {
+    changeTrailOff(e.target.value);
+  };
+  return (
+    <div>
+      <label>Trail:</label>
+      <input which="trail" type="range" min={0.05} max={2} step={0.05} onChange={handleChange} defaultValue={0.2} />
+    </div>
+  );
 };

@@ -63,7 +63,7 @@ export const DroneEffects = (props) => {
 
   return (
     <div style={{ display: props.display }}>
-      <div style={{ display: 'inline-flex', borderStyle: 'groove', backgroundColor: 'lightsalmon' }}>
+      <div style={{ display: 'inline-flex', borderStyle: 'groove' }}>
         <Fader
           name="Wetness"
           min={1}
@@ -74,26 +74,27 @@ export const DroneEffects = (props) => {
           defaultValue={70}
         />
       </div>
-      <div style={{ display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-        <div style={{ borderStyle: 'groove', backgroundColor: 'lightSalmon' }}>
+      <br></br>
+      <div style={{ display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'stretch' }}>
+        <div style={{ borderStyle: 'groove' }}>
           <EffectSelector name="Distortion" onChange={onChange} />
           <div style={distortionDisplay}>
             <DistortionControls name="Distortion"></DistortionControls>
           </div>
         </div>
-        <div style={{ borderStyle: 'groove', backgroundColor: 'lightSalmon' }}>
+        <div style={{ borderStyle: 'groove' }}>
           <EffectSelector name="Crusher" onChange={onChange} />
           <div style={crusherDisplay}>
             <CrusherControls name="Crusher"></CrusherControls>
           </div>
         </div>
-        <div style={{ borderStyle: 'groove', backgroundColor: 'lightSalmon' }}>
+        <div style={{ borderStyle: 'groove' }}>
           <EffectSelector name="Delay" onChange={onChange} />
           <div style={delayDisplay}>
             <DelayControls name="Delay"></DelayControls>
           </div>
         </div>
-        <div style={{ borderStyle: 'groove', backgroundColor: 'lightSalmon' }}>
+        <div style={{ borderStyle: 'groove' }}>
           <EffectSelector name="PitchShifter" onChange={onChange} />
           <div style={pitchShifterDisplay}>
             <PitchShifterControls name="PitchShifter"></PitchShifterControls>
@@ -187,6 +188,7 @@ const Fader = (props) => {
   return (
     <div>
       <input
+        className="fader"
         type="range"
         max={props.max}
         min={props.min}

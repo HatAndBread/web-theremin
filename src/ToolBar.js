@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ThereminOptions } from './ThereminOptions';
 import { DroneSettings } from './droneSettings';
 import { HarmonySettings } from './HarmonySettings';
 import { OctaveSettings } from './OctaveSettings';
 import { Noise } from './Noise';
 import { makePedalTone, addInfinity, toolbarSizeChanged, startApp } from './MusicLogic';
-
+import { changeLatency, changeMaster, stopDrone } from './droneInstruments';
 import { ThereminEffects } from './ThereminEffects';
 import { DroneEffects } from './DroneEffects';
 import * as Tone from 'tone';
@@ -24,6 +24,7 @@ export class ToolBar extends React.Component {
       effectsSettingsDisplay: 'none',
       noiseSettingsDisplay: 'none',
       octavesSettingsDisplay: 'none',
+      masterSettingsDisplay: 'none',
       musicStarted: false,
       pedalAdded: false,
       pedalText: 'Add P.Tone',
@@ -39,6 +40,7 @@ export class ToolBar extends React.Component {
     this.hideHarmonySettings = this.hideHarmonySettings.bind(this);
     this.hideOctaveSettings = this.hideOctaveSettings.bind(this);
     this.hideNoiseSettings = this.hideNoiseSettings.bind(this);
+    this.hideMasterSettings = this.hideMasterSettings.bind(this);
     this.startMusic = this.startMusic.bind(this);
     this.handleResize = this.handleResize.bind(this);
     this.startButtText = 'LOAD AUDIO AND START';
@@ -63,7 +65,8 @@ export class ToolBar extends React.Component {
             effectsSettingsDisplay: 'none',
             noiseSettingsDisplay: 'none',
             octavesSettingsDisplay: 'none',
-            droneEffectsDisplay: 'none'
+            droneEffectsDisplay: 'none',
+            masterSettingsDisplay: 'none'
           });
         } else {
           this.setState({
@@ -74,7 +77,8 @@ export class ToolBar extends React.Component {
             effectsSettingsDisplay: 'none',
             noiseSettingsDisplay: 'none',
             octavesSettingsDisplay: 'none',
-            droneEffectsDisplay: 'none'
+            droneEffectsDisplay: 'none',
+            masterSettingsDisplay: 'none'
           });
         }
 
@@ -88,7 +92,8 @@ export class ToolBar extends React.Component {
           noiseSettingsDisplay: 'none',
           octavesSettingsDisplay: 'none',
           droneEffectsDisplay: 'none',
-          advancedDisplay: 'none'
+          advancedDisplay: 'none',
+          masterSettingsDisplay: 'none'
         });
         break;
       case 'drone':
@@ -100,7 +105,21 @@ export class ToolBar extends React.Component {
           effectsSettingsDisplay: 'none',
           noiseSettingsDisplay: 'none',
           octavesSettingsDisplay: 'none',
-          advancedDisplay: 'none'
+          advancedDisplay: 'none',
+          masterSettingsDisplay: 'none'
+        });
+        break;
+      case 'master':
+        this.setState({
+          droneSettingsDisplay: 'none',
+          droneEffectsDisplay: 'none',
+          thereminSettingsDisplay: 'none',
+          harmonySettingsDisplay: 'none',
+          effectsSettingsDisplay: 'none',
+          noiseSettingsDisplay: 'none',
+          octavesSettingsDisplay: 'none',
+          advancedDisplay: 'none',
+          masterSettingsDisplay: ''
         });
         break;
       case 'harmony':
@@ -112,7 +131,8 @@ export class ToolBar extends React.Component {
           noiseSettingsDisplay: 'none',
           octavesSettingsDisplay: 'none',
           droneEffectsDisplay: 'none',
-          advancedDisplay: 'none'
+          advancedDisplay: 'none',
+          masterSettingsDisplay: 'none'
         });
         break;
       case 'effects':
@@ -124,7 +144,8 @@ export class ToolBar extends React.Component {
           noiseSettingsDisplay: 'none',
           octavesSettingsDisplay: 'none',
           droneEffectsDisplay: 'none',
-          advancedDisplay: 'none'
+          advancedDisplay: 'none',
+          masterSettingsDisplay: 'none'
         });
         break;
       case 'noise':
@@ -137,7 +158,8 @@ export class ToolBar extends React.Component {
             noiseSettingsDisplay: '',
             octavesSettingsDisplay: 'none',
             droneEffectsDisplay: 'none',
-            advancedDisplay: 'none'
+            advancedDisplay: 'none',
+            masterSettingsDisplay: 'none'
           });
         } else {
           this.setState({
@@ -148,7 +170,8 @@ export class ToolBar extends React.Component {
             noiseSettingsDisplay: 'none',
             octavesSettingsDisplay: 'none',
             droneEffectsDisplay: 'none',
-            advancedDisplay: 'none'
+            advancedDisplay: 'none',
+            masterSettingsDisplay: 'none'
           });
         }
 
@@ -163,7 +186,8 @@ export class ToolBar extends React.Component {
             noiseSettingsDisplay: 'none',
             octavesSettingsDisplay: '',
             droneEffectsDisplay: 'none',
-            advancedDisplay: 'none'
+            advancedDisplay: 'none',
+            masterSettingsDisplay: 'none'
           });
         } else {
           this.setState({
@@ -174,7 +198,8 @@ export class ToolBar extends React.Component {
             noiseSettingsDisplay: 'none',
             octavesSettingsDisplay: 'none',
             droneEffectsDisplay: 'none',
-            advancedDisplay: 'none'
+            advancedDisplay: 'none',
+            masterSettingsDisplay: 'none'
           });
         }
         break;
@@ -187,7 +212,8 @@ export class ToolBar extends React.Component {
           noiseSettingsDisplay: 'none',
           octavesSettingsDisplay: 'none',
           droneEffectsDisplay: '',
-          advancedDisplay: 'none'
+          advancedDisplay: 'none',
+          masterSettingsDisplay: 'none'
         });
         break;
       case 'infinity':
@@ -237,6 +263,9 @@ export class ToolBar extends React.Component {
   hideOctaveSettings() {
     this.setState({ octavesSettingsDisplay: 'none' });
   }
+  hideMasterSettings() {
+    this.setState({ masterSettingsDisplay: 'none' });
+  }
   startMusic() {
     startApp();
     this.setState({ startedStyle: '' });
@@ -261,12 +290,13 @@ export class ToolBar extends React.Component {
         <div style={{ display: this.state.startedStyle }}>
           <div style={{ display: 'flex', position: 'fixed', top: '10px', margin: '0', padding: '0' }}>
             <ToolbarButt name="Advanced" which="advanced" openSettings={this.openSettings} />
-            <div style={{ display: this.state.advancedDisplay, flexDirection: 'column' }}>
-              <ToolbarButt name="Set Lead" which="theremin" openSettings={this.openSettings} />
-              <ToolbarButt name="Effects" which="effects" openSettings={this.openSettings} />
-              <ToolbarButt name="Drone" which="drone" openSettings={this.openSettings} />
+            <div style={{ display: this.state.advancedDisplay, flexDirection: 'column', margin: '0', padding: '0' }}>
+              <ToolbarButt name="Theremin Settings" which="theremin" openSettings={this.openSettings} />
+              <ToolbarButt name="Theremin Effects" which="effects" openSettings={this.openSettings} />
+              <ToolbarButt name="Drone Settings" which="drone" openSettings={this.openSettings} />
               <ToolbarButt name="Drone Effects" which="droneEffects" openSettings={this.openSettings} />
               <ToolbarButt name="Intonation" which="harmony" openSettings={this.openSettings} />
+              <ToolbarButt name="Master" which="master" openSettings={this.openSettings} />
             </div>
           </div>
           <span role="img" aria-label="pretty">
@@ -275,12 +305,14 @@ export class ToolBar extends React.Component {
           <br></br>
           <div style={{ display: 'inline-flex' }}>
             <ToolbarButt name="Octave" which="octave" openSettings={this.openSettings} />
+            <StopChords />
             <ToolbarButt name={this.state.pedalText} which="pedal" openSettings={this.openSettings} />
             <ToolbarButt name={this.state.infinityText} which="infinity" openSettings={this.openSettings} />
             <ToolbarButt name="NOISE" which="noise" openSettings={this.openSettings} />
           </div>
           <ThereminOptions display={this.state.thereminSettingsDisplay} hide={this.hideThereminSettings} />
           <ThereminEffects display={this.state.effectsSettingsDisplay} hide={this.hideThereminEffects} />
+          <MasterSettings display={this.state.masterSettingsDisplay} hide={this.hideMasterSettings} />
           <DroneEffects display={this.state.droneEffectsDisplay} hide={this.hideDroneEffectsSettings} />
           <HarmonySettings display={this.state.harmonySettingsDisplay} hide={this.hideHarmonySettings} />
           <Noise display={this.state.noiseSettingsDisplay} hide={this.hideNoiseSettings} />
@@ -347,3 +379,88 @@ function StartStopButt(props) {
     </button>
   );
 }
+
+const MasterSettings = (props) => {
+  const handleChange = (value, which) => {
+    if (which === 'masterVol') {
+      changeMaster(value);
+    }
+  };
+  return (
+    <div style={{ display: props.display }}>
+      <div style={{ display: 'inline-flex' }}>
+        <div style={{ borderStyle: 'groove', borderColor: 'slategrey' }}>
+          <MasterVolume
+            texty="Master Volume 🚨"
+            which="masterVol"
+            myMin="-50"
+            myMax="-1"
+            myStep="1"
+            handleChange={handleChange}
+            myDefault="-10"
+          />
+        </div>
+        <div style={{ borderStyle: 'groove', borderColor: 'slategrey' }}>
+          <Latency />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const MasterVolume = (props) => {
+  const handleChange = (e) => {
+    let value = e.target.value;
+    let which = props.which;
+    props.handleChange(value, which);
+  };
+  return (
+    <div>
+      <label>{props.texty}:</label>
+      <br></br>
+      <input
+        className="fader"
+        which={props.which}
+        type="range"
+        min={props.myMin}
+        max={props.myMax}
+        step={props.myStep}
+        onChange={handleChange}
+        defaultValue={props.myDefault}
+      />
+    </div>
+  );
+};
+
+const Latency = (props) => {
+  const [selected, setSelected] = useState('balanced');
+  const onChange = (e) => {
+    if (e.target.value === 'fast') {
+      alert(
+        '💀🚨👻 Warning:　Changing latency to "fast" can cause performance issues (including clipping) on slower devices.'
+      );
+      changeLatency('fast');
+    } else {
+      changeLatency('balanced');
+    }
+  };
+  return (
+    <form>
+      <div>Latency:</div>
+      <input id="balanced" name="balanced" type="radio" value="balanced" defaultChecked onChange={onChange}></input>
+      <label htmlFor="balanced">Balanced 😇</label>
+
+      <input id="fast" name="balanced" type="radio" value="fast" onChange={onChange}></input>
+      <label htmlFor="fast">Fast 🚨💀</label>
+    </form>
+  );
+};
+
+const StopChords = (props) => {
+  const stop = () => {
+    stopDrone('Drone 1');
+    stopDrone('Drone 2');
+    stopDrone('Drone 3');
+  };
+  return <button onClick={stop}>⏸Chords</button>;
+};

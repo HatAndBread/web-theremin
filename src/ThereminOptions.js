@@ -243,7 +243,14 @@ const Fader = (props) => {
   };
   return (
     <div>
-      <input type="range" min={props.min} max={props.max} onChange={volumeChange} defaultValue={props.defaultValue} />
+      <input
+        className="fader"
+        type="range"
+        min={props.min}
+        max={props.max}
+        onChange={volumeChange}
+        defaultValue={props.defaultValue}
+      />
       <br></br>
       <label>{props.volumeText}</label>
     </div>
