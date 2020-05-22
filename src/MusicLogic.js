@@ -90,26 +90,12 @@ export const setOctave = (howMuch) => {
 export const makePedalTone = () => {
   thereminData.pedalToneAdded ? (thereminData.pedalToneAdded = false) : (thereminData.pedalToneAdded = true);
   if (thereminData.pedalToneAdded) {
-    s2pd.exit = false;
-    gameLoop();
   } else {
     thereminData.firstTimePedalAdded = true;
-    if (!thereminData.infinityMachine) {
-      // If infinity  AND pedal are off stop loop.
-      s2pd.exit = true;
-      pedalDude.xPos = -10000;
-      initialize();
-    }
-    if (thereminData.infinityMachine) {
-      // Keep loop going if infinity is on.
-      pedalDude.xPos = -10000;
-      initialize();
-    }
   }
 };
 
 const removeInfinity = () => {
-  s2pd.exit = true;
   thereminData.infinityMachine = false;
   console.log('current synth before function:');
   console.log(currentSynth);
@@ -158,10 +144,10 @@ const thereminData = {
   square: false,
   sawtooth: false,
   triangle: false,
-  sineVolume: -25,
-  squareVolume: -25,
-  sawtoothVolume: -25,
-  triangleVolume: -25,
+  sineVolume: -10,
+  squareVolume: -10,
+  sawtoothVolume: -10,
+  triangleVolume: -10,
   attack: 0.7,
   sustain: 0.7,
   decay: 0.1,
@@ -325,10 +311,6 @@ pinky.start();
 
 let noiseOn = false;
 export const turnNoiseOn = () => {
-  if (s2pd.exit) {
-    s2pd.exit = false;
-    gameLoop();
-  }
   pinkDude.xPos = s2pd.width / 2;
   pinkDude.yPos = 100;
   pinky.start();
@@ -337,9 +319,6 @@ export const turnNoiseOn = () => {
 };
 
 export const turnNoiseOff = () => {
-  if (!s2pd.exit) {
-    s2pd.exit = true;
-  }
   pinkDude.xPos = -10000;
   pinkDude.yPos = -10000;
   pinky.stop();
@@ -354,10 +333,6 @@ const micPingPong = new Tone.PingPongDelay(0.1, 0.1);
 const micVolume = new Tone.Volume(0);
 
 export const turnOnMike = () => {
-  if (s2pd.exit) {
-    s2pd.exit = false;
-    gameLoop();
-  }
   microphone
     .open()
     .then(function () {
@@ -371,9 +346,6 @@ export const turnOnMike = () => {
   mike.yPos = s2pd.height / 2;
 };
 export const turnOffMike = () => {
-  if (!s2pd.exit) {
-    s2pd.exit = true;
-  }
   microphone.disconnect();
   mike.xPos = -10000;
   mike.yPos = -10000;
@@ -734,39 +706,37 @@ export const onBeingLetUp = (heldObject) => {
     }
   }
   if (heldObject === musicBoard && !thereminData.infinityMachine) {
-    if (!s2pd.exit) {
-      s2pd.exit = true;
-      if (thereminData.sine || thereminData.square || thereminData.sawtooth || thereminData.triangle) {
-        try {
-          if (!thereminData.pedalToneAdded) {
-            for (let i = 0; i < howManyThingsToPop(); i++) {
-              let lastSynth = currentSynth.pop();
-              lastSynth.triggerRelease(thereminData.trailOff);
-              setTimeout(function () {
-                lastSynth.dispose();
-                console.log('this is the synth array: ');
-                console.log(currentSynth);
-              }, thereminData.trailOff * 5000);
-            }
+    if (thereminData.sine || thereminData.square || thereminData.sawtooth || thereminData.triangle) {
+      try {
+        if (!thereminData.pedalToneAdded) {
+          for (let i = 0; i < howManyThingsToPop(); i++) {
+            let lastSynth = currentSynth.pop();
+            lastSynth.triggerRelease(thereminData.trailOff);
+            setTimeout(function () {
+              lastSynth.dispose();
+              console.log('this is the synth array: ');
+              console.log(currentSynth);
+            }, thereminData.trailOff * 5000);
           }
-          if (thereminData.pedalToneAdded && !thereminData.infinityMachine) {
-            for (let i = 0; i < howManyThingsToPop(); i++) {
-              let lastSynth = currentSynth.pop();
-              lastSynth.triggerRelease(thereminData.trailOff);
-              setTimeout(function () {
-                lastSynth.dispose();
-                console.log('this is the synth array: ');
-                console.log(currentSynth);
-              }, thereminData.trailOff * 5000);
-            }
-          }
-        } catch (e) {
-          console.log(e);
         }
+        if (thereminData.pedalToneAdded && !thereminData.infinityMachine) {
+          for (let i = 0; i < howManyThingsToPop(); i++) {
+            let lastSynth = currentSynth.pop();
+            lastSynth.triggerRelease(thereminData.trailOff);
+            setTimeout(function () {
+              lastSynth.dispose();
+              console.log('this is the synth array: ');
+              console.log(currentSynth);
+            }, thereminData.trailOff * 5000);
+          }
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
   }
 };
+//};
 export const onBeingHeldDown = (heldObject) => {
   /// What to do if user touches canvas
   const synthFactory = (waveType) => {
@@ -804,12 +774,7 @@ export const onBeingHeldDown = (heldObject) => {
     }
   };
   if (heldObject === musicBoard) {
-    if (s2pd.exit && !thereminData.pedalToneAdded) {
-      if (s2pd.exit) {
-        s2pd.exit = false;
-        gameLoop();
-      }
-
+    if (!thereminData.pedalToneAdded && !thereminData.infinityMachine && currentSynth.length === 0) {
       if (thereminData.sine) {
         ////// If user holds on canvas create new synths.
 
@@ -827,11 +792,6 @@ export const onBeingHeldDown = (heldObject) => {
       }
     }
     if (thereminData.pedalToneAdded && !thereminData.infinityMachine && currentSynth.length === 0) {
-      if (s2pd.exit) {
-        s2pd.exit = false;
-        gameLoop();
-      }
-
       if (thereminData.sine) {
         ////// If user holds on canvas create new synths.
 
@@ -849,14 +809,7 @@ export const onBeingHeldDown = (heldObject) => {
       }
     }
     if (thereminData.infinityMachine && currentSynth.length === 0) {
-      if (s2pd.exit) {
-        s2pd.exit = false;
-        gameLoop();
-      }
-
       if (thereminData.sine) {
-        ////// If user holds on canvas create new synths.
-
         // make sure that length never exceeds one
         synthFactory('sine');
       }
@@ -933,6 +886,7 @@ const fingerTracker = {
   currentPosition: thereminDude.xPos,
   priorPosition: 0
 };
+let warble = 0;
 
 export const gameLoop = () => {
   initialize();
@@ -947,9 +901,9 @@ export const gameLoop = () => {
 
   noteGarbage.forEach((index) => (index.color = s2pd.getRandomColor()));
 
-  let warble = 0;
   if (thereminData.randomWarble) {
     warble = s2pd.randomBetween(-thereminData.randomWarbleValue, thereminData.randomWarbleValue);
+    frequencyChanger(warble, thereminData.octaveChanger);
   }
 
   if (noiseOn) {
@@ -984,7 +938,7 @@ export const gameLoop = () => {
       thereminData.firstTimePedalAdded = false;
     }
   } else {
-    pedalDude.yPos = -10000;
+    pedalDude.yPos = -100;
   }
   ////INCREASE AND DECREASE SIZE OF USER FINGER CIRCLE
 
@@ -1055,10 +1009,6 @@ export const gameLoop = () => {
     frequencyChanger(warble, thereminData.octaveChanger); //update the frequency of the theremin
   }
 
-  if (s2pd.exit) {
-    thereminDude.yPos = -10000;
-    initialize();
-  }
   if (!s2pd.exit) {
     requestAnimationFrame(gameLoop);
   }
@@ -1075,3 +1025,8 @@ if (!justIntonation) {
   drawBoard(equalTempRatios);
 }
 s2pd.canvas.style.backgroundColor = `rgb(30,10,10)`;
+
+gameLoop();
+gameLoop();
+gameLoop();
+gameLoop();

@@ -1,8 +1,6 @@
 import { onBeingHeldDown, onBeingLetUp } from './MusicLogic';
 
 export const s2pd = {
-  allAudioObjects: [],
-  loadedAudio: [],
   allGameObjects: [],
   allBackgrounds: [],
   clickableObjects: [],
@@ -24,7 +22,7 @@ export const s2pd = {
   touchDetected: false,
   objectsToLoad: [],
   orientation: undefined,
-  exit: true,
+  exit: false,
   enableDragAndDrop: true,
   firstTimeThroughLoop: true,
   aspectRatio: 16 / 9,
@@ -248,7 +246,7 @@ export const s2pd = {
   /// For example, a 10 frame animation with 32 x 32 pixel individual frames must be laid out
   /// in a 320 x 32 file. The library will take care of the rest.
   ///
-  ///  const rabbit = new Sprite ('rabbit', 100,100,10,'./rabbits.png',3) **create rabbit at coordinates 100,100.10 frames in file. source. speed (1 to 60 with one being the fastest)
+  ///  const rabbit = new Sprite ('rabbit', 100,100,10,'./rabbits.png',3) **create rabbit at coordinates 100,100.10 frames in file. source. speed (1 ouchcho 60 with one being the fastest)
   ///  rabbit.addAnimation('left',0,4) *** add an animation starting at frame 0 and continuing for 4 frames
   ///  rabbit.addAnimation('right',4,4) *** add an animation starting at frame 4 and continuing for 4 frames
   ///  rabbit.addAnimation('stopLeft',8,1) *** add a single frame animation starting at frame 8

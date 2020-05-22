@@ -1,12 +1,9 @@
 import * as Tone from 'tone';
 
 ///TONE SETTINGS
-Tone.context.dispose();
-const audioContext = new AudioContext();
-Tone.setContext(audioContext);
 
 Tone.Master.volume.value = -10; // turning this too high causes big problems!!!
-Tone.context.latencyHint = 'balanced'; //// make this  a variable with warning???
+Tone.context.latencyHint = 'interactive'; //// make this  a variable with warning???
 export const changeLatency = (which) => {
   if (which === 'balanced') {
     Tone.context.latencyHint = 'balanced';
@@ -25,6 +22,7 @@ export const theLimiter = new Tone.Limiter({
 }).toMaster();
 
 const droneCrusher = new Tone.BitCrusher(8);
+
 const dronePitchShifter = new Tone.PitchShift(1);
 const dronePingPong = new Tone.FeedbackDelay(1, 1);
 const droneDist = new Tone.Distortion(1).chain(dronePingPong, dronePitchShifter, theLimiter);
@@ -137,32 +135,76 @@ export const droneMachine = {
   },
   one: {
     sine: {
-      oscillator: [],
+      gain: new Tone.Gain(0),
+      oscillator: new Tone.Oscillator(440, 'sine'),
+      osc2: new Tone.FatOscillator({
+        frequency: 440,
+        detune: 6,
+        phase: 0,
+        spread: 1,
+        count: 2,
+        type: 'sine',
+        partials: [],
+        partialCount: 0
+      }),
       on: false,
       selected: true
     },
 
     square: {
-      oscillator: [],
+      gain: new Tone.Gain(0),
+      oscillator: new Tone.Oscillator(440, 'square'),
+      osc2: new Tone.FatOscillator({
+        frequency: 440,
+        detune: 6,
+        phase: 0,
+        spread: 1,
+        count: 2,
+        type: 'square',
+        partials: [],
+        partialCount: 0
+      }),
       on: false,
       selected: false
     },
 
     sawtooth: {
-      oscillator: [],
+      gain: new Tone.Gain(0),
+      oscillator: new Tone.Oscillator(440, 'sawtooth'),
+      osc2: new Tone.FatOscillator({
+        frequency: 440,
+        detune: 6,
+        phase: 0,
+        spread: 1,
+        count: 2,
+        type: 'sawtooth',
+        partials: [],
+        partialCount: 0
+      }),
 
       on: false,
       selected: false
     },
 
     triangle: {
-      oscillator: [],
+      gain: new Tone.Gain(0),
+      oscillator: new Tone.Oscillator(440, 'triangle'),
+      osc2: new Tone.FatOscillator({
+        frequency: 440,
+        detune: 6,
+        phase: 0,
+        spread: 1,
+        count: 2,
+        type: 'triangle',
+        partials: [],
+        partialCount: 0
+      }),
 
       on: false,
       selected: false
     },
     allWavesOff: true,
-    volume: -35,
+    volume: -25,
     myPitch: 261.63,
     myPitchInJust: 0,
     myPitchInEqual: 0,
@@ -170,34 +212,78 @@ export const droneMachine = {
   },
   two: {
     sine: {
-      oscillator: [],
+      gain: new Tone.Gain(0),
+      oscillator: new Tone.Oscillator(440, 'sine'),
+      osc2: new Tone.FatOscillator({
+        frequency: 440,
+        detune: 4,
+        phase: 0,
+        spread: 1,
+        count: 2,
+        type: 'sine',
+        partials: [],
+        partialCount: 0
+      }),
 
       on: false,
       selected: true
     },
 
     square: {
-      oscillator: [],
+      gain: new Tone.Gain(0),
+      oscillator: new Tone.Oscillator(440, 'square'),
+      osc2: new Tone.FatOscillator({
+        frequency: 440,
+        detune: 4,
+        phase: 0,
+        spread: 1,
+        count: 2,
+        type: 'square',
+        partials: [],
+        partialCount: 0
+      }),
 
       on: false,
       selected: false
     },
 
     sawtooth: {
-      oscillator: [],
+      gain: new Tone.Gain(0),
+      oscillator: new Tone.Oscillator(440, 'sawtooth'),
+      osc2: new Tone.FatOscillator({
+        frequency: 440,
+        detune: 4,
+        phase: 0,
+        spread: 1,
+        count: 2,
+        type: 'sawtooth',
+        partials: [],
+        partialCount: 0
+      }),
 
       on: false,
       selected: false
     },
 
     triangle: {
-      oscillator: [],
+      gain: new Tone.Gain(0),
+      oscillator: new Tone.Oscillator(440, 'triangle'),
+      osc2: new Tone.FatOscillator({
+        frequency: 440,
+        detune: 4,
+        phase: 0,
+        spread: 1,
+        count: 2,
+        type: 'triangle',
+        partials: [],
+        partialCount: 0
+      }),
 
       on: false,
       selected: false
     },
     allWavesOff: true,
-    volume: -35,
+    volume: -25,
     myPitch: 261.63,
     myPitchInJust: 0,
     myPitchInEqual: 0,
@@ -205,34 +291,76 @@ export const droneMachine = {
   },
   three: {
     sine: {
-      oscillator: [],
+      gain: new Tone.Gain(0),
+      oscillator: new Tone.Oscillator(440, 'sine'),
+      osc2: new Tone.FatOscillator({
+        frequency: 440,
+        detune: 8,
+        phase: 0,
+        spread: 1,
+        count: 2,
+        type: 'sine',
+        partials: [],
+        partialCount: 0
+      }),
 
       on: false,
       selected: true
     },
 
     square: {
-      oscillator: [],
+      gain: new Tone.Gain(0),
+      oscillator: new Tone.Oscillator(440, 'square'),
+      osc2: new Tone.FatOscillator({
+        frequency: 440,
+        detune: 8,
+        phase: 0,
+        spread: 1,
+        count: 2,
+        type: 'square',
+        partials: [],
+        partialCount: 0
+      }),
 
       on: false,
       selected: false
     },
 
     sawtooth: {
-      oscillator: [],
-
+      gain: new Tone.Gain(0),
+      oscillator: new Tone.Oscillator(440, 'sawtooth'),
+      osc2: new Tone.FatOscillator({
+        frequency: 440,
+        detune: 8,
+        phase: 0,
+        spread: 1,
+        count: 2,
+        type: 'sawtooth',
+        partials: [],
+        partialCount: 0
+      }),
       on: false,
       selected: false
     },
 
     triangle: {
-      oscillator: [],
-
+      gain: new Tone.Gain(0),
+      oscillator: new Tone.Oscillator(440, 'triangle'),
+      osc2: new Tone.FatOscillator({
+        frequency: 440,
+        detune: 8,
+        phase: 0,
+        spread: 1,
+        count: 2,
+        type: 'triangle',
+        partials: [],
+        partialCount: 0
+      }),
       on: false,
       selected: false
     },
     allWavesOff: true,
-    volume: -35,
+    volume: -25,
     myPitch: 261.63,
     myPitchInJust: 0,
     myPitchInEqual: 0,
@@ -240,36 +368,35 @@ export const droneMachine = {
   }
 };
 
-const makeNewOscillator = (whichMachine, whatWave) => {
-  const freshOsc = new Tone.Oscillator(whichMachine.myPitch, whatWave).connect(droneDist);
-  freshOsc.volume.value = whichMachine.volume;
-  switch (whatWave) {
-    case 'sine':
-      whichMachine.sine.oscillator.push(freshOsc);
-      break;
-    case 'square':
-      whichMachine.square.oscillator.push(freshOsc);
-      break;
-    case 'sawtooth':
-      whichMachine.sawtooth.oscillator.push(freshOsc);
-      break;
-    case 'triangle':
-      whichMachine.triangle.oscillator.push(freshOsc);
-      break;
-    default:
-      console.log('You made an error somewhere');
-      break;
-  }
-};
-
-const destroyOscillator = (whatToDestroy) => {
-  if (whatToDestroy.oscillator.length > 0) {
-    whatToDestroy.oscillator[0].stop();
-    whatToDestroy.oscillator[0].dispose();
-    whatToDestroy.oscillator.splice(0, whatToDestroy.oscillator.length);
-  }
-};
+droneMachine.one.sine.oscillator.chain(droneMachine.one.sine.gain, droneDist).start();
+droneMachine.one.square.oscillator.chain(droneMachine.one.square.gain, droneDist).start();
+droneMachine.one.sawtooth.oscillator.chain(droneMachine.one.sawtooth.gain, droneDist).start();
+droneMachine.one.triangle.oscillator.chain(droneMachine.one.triangle.gain, droneDist).start();
+droneMachine.two.sine.oscillator.chain(droneMachine.two.sine.gain, droneDist).start();
+droneMachine.two.square.oscillator.chain(droneMachine.two.square.gain, droneDist).start();
+droneMachine.two.sawtooth.oscillator.chain(droneMachine.two.sawtooth.gain, droneDist).start();
+droneMachine.two.triangle.oscillator.chain(droneMachine.two.triangle.gain, droneDist).start();
+droneMachine.three.sine.oscillator.chain(droneMachine.three.sine.gain, droneDist).start();
+droneMachine.three.square.oscillator.chain(droneMachine.three.square.gain, droneDist).start();
+droneMachine.three.sawtooth.oscillator.chain(droneMachine.three.sawtooth.gain, droneDist).start();
+droneMachine.three.triangle.oscillator.chain(droneMachine.three.triangle.gain, droneDist).start();
+droneMachine.one.sine.osc2.chain(droneMachine.one.sine.gain, droneDist).start();
+droneMachine.one.square.osc2.chain(droneMachine.one.square.gain, droneDist).start();
+droneMachine.one.sawtooth.osc2.chain(droneMachine.one.sawtooth.gain, droneDist).start();
+droneMachine.one.triangle.osc2.chain(droneMachine.one.triangle.gain, droneDist).start();
+droneMachine.two.sine.osc2.chain(droneMachine.two.sine.gain, droneDist).start();
+droneMachine.two.square.osc2.chain(droneMachine.two.square.gain, droneDist).start();
+droneMachine.two.sawtooth.osc2.chain(droneMachine.two.sawtooth.gain, droneDist).start();
+droneMachine.two.triangle.osc2.chain(droneMachine.two.triangle.gain, droneDist).start();
+droneMachine.three.sine.osc2.chain(droneMachine.three.sine.gain, droneDist).start();
+droneMachine.three.square.osc2.chain(droneMachine.three.square.gain, droneDist).start();
+droneMachine.three.sawtooth.osc2.chain(droneMachine.three.sawtooth.gain, droneDist).start();
+droneMachine.three.triangle.osc2.chain(droneMachine.three.triangle.gain, droneDist).start();
 export const updateDroneMachineWave = (whichWave, whichMachine) => {
+  updateDroneMachineVolume('Drone 1', droneMachine.one.volume);
+  updateDroneMachineVolume('Drone 2', droneMachine.two.volume);
+  updateDroneMachineVolume('Drone 3', droneMachine.three.volume);
+  updateAllFrequencies();
   function waveChanger(who) {
     if (whichWave === 'sine') {
       who.square.selected = false;
@@ -277,11 +404,10 @@ export const updateDroneMachineWave = (whichWave, whichMachine) => {
       who.triangle.selected = false;
       who.sine.selected = true;
       if (!who.allWavesOff) {
-        makeNewOscillator(who, 'sine');
-        who.sine.oscillator[0].start();
-        destroyOscillator(who.square);
-        destroyOscillator(who.sawtooth);
-        destroyOscillator(who.triangle);
+        who.sine.gain.gain.rampTo(1, 0.3);
+        who.square.gain.gain.rampTo(0, 0.3);
+        who.sawtooth.gain.gain.rampTo(0, 0.3);
+        who.triangle.gain.gain.rampTo(0, 0.3);
         who.sine.on = true;
         who.square.on = false;
         who.sawtooth.on = false;
@@ -294,11 +420,10 @@ export const updateDroneMachineWave = (whichWave, whichMachine) => {
       who.triangle.selected = false;
       who.sine.selected = false;
       if (!who.allWavesOff) {
-        makeNewOscillator(who, 'square');
-        who.square.oscillator[0].start();
-        destroyOscillator(who.sine);
-        destroyOscillator(who.sawtooth);
-        destroyOscillator(who.triangle);
+        who.sine.gain.gain.rampTo(0, 0.3);
+        who.square.gain.gain.rampTo(1, 0.3);
+        who.sawtooth.gain.gain.rampTo(0, 0.3);
+        who.triangle.gain.gain.rampTo(0, 0.3);
 
         who.sine.on = false;
         who.square.on = true;
@@ -312,11 +437,10 @@ export const updateDroneMachineWave = (whichWave, whichMachine) => {
       who.triangle.selected = false;
       who.sine.selected = false;
       if (!who.allWavesOff) {
-        makeNewOscillator(who, 'sawtooth');
-        who.sawtooth.oscillator[0].start();
-        destroyOscillator(who.sine);
-        destroyOscillator(who.square);
-        destroyOscillator(who.triangle);
+        who.sine.gain.gain.rampTo(0, 0.3);
+        who.square.gain.gain.rampTo(0, 0.3);
+        who.sawtooth.gain.gain.rampTo(1, 0.3);
+        who.triangle.gain.gain.rampTo(0, 0.3);
 
         who.sine.on = false;
         who.square.on = false;
@@ -330,11 +454,10 @@ export const updateDroneMachineWave = (whichWave, whichMachine) => {
       who.triangle.selected = true;
       who.sine.selected = false;
       if (!who.allWavesOff) {
-        makeNewOscillator(who, 'triangle');
-        who.triangle.oscillator[0].start();
-        destroyOscillator(who.sine);
-        destroyOscillator(who.sawtooth);
-        destroyOscillator(who.square);
+        who.sine.gain.gain.rampTo(0, 0.3);
+        who.square.gain.gain.rampTo(0, 0.3);
+        who.sawtooth.gain.gain.rampTo(0, 0.3);
+        who.triangle.gain.gain.rampTo(1, 0.3);
 
         who.sine.on = false;
         who.square.on = false;
@@ -362,18 +485,15 @@ export const updateDroneMachineWave = (whichWave, whichMachine) => {
 export const updateDroneMachineVolume = (whichMachine, value) => {
   function updater(machine) {
     machine.volume = value;
-    if (machine.sine.oscillator.length > 0) {
-      machine.sine.oscillator[0].volume.value = value;
-    }
-    if (machine.square.oscillator.length > 0) {
-      machine.square.oscillator[0].volume.value = value;
-    }
-    if (machine.sawtooth.oscillator.length > 0) {
-      machine.sawtooth.oscillator[0].volume.value = value;
-    }
-    if (machine.triangle.oscillator.length > 0) {
-      machine.triangle.oscillator[0].volume.value = value;
-    }
+
+    machine.sine.oscillator.volume.value = value;
+    machine.square.oscillator.volume.value = value;
+    machine.sawtooth.oscillator.volume.value = value;
+    machine.triangle.oscillator.volume.value = value;
+    machine.sine.osc2.volume.value = value;
+    machine.square.osc2.volume.value = value;
+    machine.sawtooth.osc2.volume.value = value;
+    machine.triangle.osc2.volume.value = value;
   }
   switch (whichMachine) {
     case 'Drone 1':
@@ -460,39 +580,35 @@ export const updateMyOctave = (value, whichMachine) => {
       break;
   }
 };
-
+let pitchRamper = 0.01;
 export const changePitch = (which, value) => {
   function updater(machine) {
     if (justIntonation) {
-      if (machine.sine.oscillator.length > 0) {
-        machine.sine.oscillator[0].frequency.value = justFrequencies[value] * machine.myOctave;
-      }
-      if (machine.square.oscillator.length > 0) {
-        machine.square.oscillator[0].frequency.value = justFrequencies[value] * machine.myOctave;
-      }
-      if (machine.sawtooth.oscillator.length > 0) {
-        machine.sawtooth.oscillator[0].frequency.value = justFrequencies[value] * machine.myOctave;
-      }
-      if (machine.triangle.oscillator.length > 0) {
-        machine.triangle.oscillator[0].frequency.value = justFrequencies[value] * machine.myOctave;
-      }
+      machine.sine.oscillator.frequency.rampTo(justFrequencies[value] * machine.myOctave, pitchRamper);
+      machine.square.oscillator.frequency.rampTo(justFrequencies[value] * machine.myOctave, pitchRamper);
+      machine.sawtooth.oscillator.frequency.rampTo(justFrequencies[value] * machine.myOctave, pitchRamper);
+      machine.triangle.oscillator.frequency.rampTo(justFrequencies[value] * machine.myOctave, pitchRamper);
+
+      machine.sine.osc2.frequency.rampTo(justFrequencies[value] * machine.myOctave, pitchRamper);
+      machine.square.osc2.frequency.rampTo(justFrequencies[value] * machine.myOctave, pitchRamper);
+      machine.sawtooth.osc2.frequency.rampTo(justFrequencies[value] * machine.myOctave, pitchRamper);
+      machine.triangle.osc2.frequency.rampTo(justFrequencies[value] * machine.myOctave, pitchRamper);
 
       machine.myPitchInJust = value;
       machine.myPitch = justFrequencies[value] * machine.myOctave;
     } else {
-      if (machine.sine.oscillator.length > 0) {
-        machine.sine.oscillator[0].frequency.value = equalFrequencies[value] * machine.myOctave;
-      }
-      if (machine.square.oscillator.length > 0) {
-        machine.square.oscillator[0].frequency.value = equalFrequencies[value] * machine.myOctave;
-      }
-      if (machine.sawtooth.oscillator.length > 0) {
-        machine.sawtooth.oscillator[0].frequency.value = equalFrequencies[value] * machine.myOctave;
-      }
-      if (machine.triangle.oscillator.length > 0) {
-        machine.triangle.oscillator[0].frequency.value = equalFrequencies[value] * machine.myOctave;
-      }
+      machine.sine.oscillator.frequency.rampTo(equalFrequencies[value] * machine.myOctave, pitchRamper);
 
+      machine.square.oscillator.frequency.rampTo(equalFrequencies[value] * machine.myOctave, pitchRamper);
+
+      machine.sawtooth.oscillator.frequency.value(equalFrequencies[value] * machine.myOctave, pitchRamper);
+
+      machine.triangle.oscillator.frequency.value = (equalFrequencies[value] * machine.myOctave, pitchRamper);
+
+      machine.sine.osc2.frequency.rampTo(equalFrequencies[value] * machine.myOctave, pitchRamper);
+      machine.square.osc2.frequency.rampTo(equalFrequencies[value] * machine.myOctave, pitchRamper);
+      machine.sawtooth.osc2.frequency.rampTo(equalFrequencies[value] * machine.myOctave, pitchRamper);
+      machine.triangle.osc2.frequency.rampTo(equalFrequencies[value] * machine.myOctave, pitchRamper);
       machine.myPitchInEqual = value;
       machine.myPitch = equalFrequencies[value] * machine.myOctave;
     }
@@ -513,35 +629,67 @@ export const changePitch = (which, value) => {
   }
 };
 
+function updateAllFrequencies() {
+  droneMachine.one.sine.oscillator.frequency.value = droneMachine.one.myPitch;
+  droneMachine.one.square.oscillator.frequency.value = droneMachine.one.myPitch;
+  droneMachine.one.sawtooth.oscillator.frequency.value = droneMachine.one.myPitch;
+  droneMachine.one.triangle.oscillator.frequency.value = droneMachine.one.myPitch;
+  droneMachine.two.sine.oscillator.frequency.value = droneMachine.two.myPitch;
+  droneMachine.two.square.oscillator.frequency.value = droneMachine.two.myPitch;
+  droneMachine.two.sawtooth.oscillator.frequency.value = droneMachine.two.myPitch;
+  droneMachine.two.triangle.oscillator.frequency.value = droneMachine.two.myPitch;
+  droneMachine.three.sine.oscillator.frequency.value = droneMachine.three.myPitch;
+  droneMachine.three.square.oscillator.frequency.value = droneMachine.three.myPitch;
+  droneMachine.three.sawtooth.oscillator.frequency.value = droneMachine.three.myPitch;
+  droneMachine.three.triangle.oscillator.frequency.value = droneMachine.three.myPitch;
+  droneMachine.one.sine.osc2.frequency.value = droneMachine.one.myPitch;
+  droneMachine.one.square.osc2.frequency.value = droneMachine.one.myPitch;
+  droneMachine.one.sawtooth.osc2.frequency.value = droneMachine.one.myPitch;
+  droneMachine.one.triangle.osc2.frequency.value = droneMachine.one.myPitch;
+  droneMachine.two.sine.osc2.frequency.value = droneMachine.two.myPitch;
+  droneMachine.two.square.osc2.frequency.value = droneMachine.two.myPitch;
+  droneMachine.two.sawtooth.osc2.frequency.value = droneMachine.two.myPitch;
+  droneMachine.two.triangle.osc2.frequency.value = droneMachine.two.myPitch;
+  droneMachine.three.sine.osc2.frequency.value = droneMachine.three.myPitch;
+  droneMachine.three.square.osc2.frequency.value = droneMachine.three.myPitch;
+  droneMachine.three.sawtooth.osc2.frequency.value = droneMachine.three.myPitch;
+  droneMachine.three.triangle.osc2.frequency.value = droneMachine.three.myPitch;
+}
+
 export const startDrone = (which) => {
+  updateAllFrequencies();
   if (!droneMachine.data.machineOn) {
     droneMachine.data.machineOn = true;
   }
   function waveChooser(machine) {
     function startBoth(whatWave) {
       if (whatWave === 'sine') {
-        makeNewOscillator(machine, 'sine');
-        machine.sine.oscillator[0].frequency.value = machine.myPitch;
-        machine.sine.oscillator[0].volume.value = machine.volume;
-        machine.sine.oscillator[0].start();
+        machine.sine.oscillator.frequency.value = machine.myPitch;
+        machine.sine.oscillator.volume.value = machine.volume;
+        machine.sine.osc2.frequency.value = machine.myPitch;
+        machine.sine.osc2.volume.value = machine.volume;
+        machine.sine.gain.gain.rampTo(1, 0.3);
       }
       if (whatWave === 'square') {
-        makeNewOscillator(machine, 'square');
-        machine.square.oscillator[0].frequency.value = machine.myPitch;
-        machine.square.oscillator[0].volume.value = machine.volume;
-        machine.square.oscillator[0].start();
+        machine.square.oscillator.frequency.value = machine.myPitch;
+        machine.square.oscillator.volume.value = machine.volume;
+        machine.square.osc2.frequency.value = machine.myPitch;
+        machine.square.osc2.volume.value = machine.volume;
+        machine.square.gain.gain.rampTo(1, 0.3);
       }
       if (whatWave === 'sawtooth') {
-        makeNewOscillator(machine, 'sawtooth');
-        machine.sawtooth.oscillator[0].frequency.value = machine.myPitch;
-        machine.sawtooth.oscillator[0].volume.value = machine.volume;
-        machine.sawtooth.oscillator[0].start();
+        machine.sawtooth.oscillator.frequency.value = machine.myPitch;
+        machine.sawtooth.oscillator.volume.value = machine.volume;
+        machine.sawtooth.osc2.frequency.value = machine.myPitch;
+        machine.sawtooth.osc2.volume.value = machine.volume;
+        machine.sawtooth.gain.gain.rampTo(1, 0.3);
       }
       if (whatWave === 'triangle') {
-        makeNewOscillator(machine, 'triangle');
-        machine.triangle.oscillator[0].frequency.value = machine.myPitch;
-        machine.triangle.oscillator[0].volume.value = machine.volume;
-        machine.triangle.oscillator[0].start();
+        machine.triangle.oscillator.frequency.value = machine.myPitch;
+        machine.triangle.oscillator.volume.value = machine.volume;
+        machine.triangle.osc2.frequency.value = machine.myPitch;
+        machine.triangle.osc2.volume.value = machine.volume;
+        machine.triangle.gain.gain.rampTo(1, 0.3);
       }
     }
 
@@ -582,16 +730,16 @@ export const startDrone = (which) => {
 export const stopDrone = (which) => {
   function waveStopper(machine) {
     if (machine.sine.on) {
-      destroyOscillator(machine.sine);
+      machine.sine.gain.gain.rampTo(0, 0.3);
     }
     if (machine.square.on) {
-      destroyOscillator(machine.square);
+      machine.square.gain.gain.rampTo(0, 0.3);
     }
     if (machine.sawtooth.on) {
-      destroyOscillator(machine.sawtooth);
+      machine.sawtooth.gain.gain.rampTo(0, 0.3);
     }
     if (machine.triangle.on) {
-      destroyOscillator(machine.triangle);
+      machine.triangle.gain.gain.rampTo(0, 0.3);
     }
     machine.sine.on = false;
     machine.square.on = false;

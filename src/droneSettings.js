@@ -362,7 +362,7 @@ const IndividualDrone = (props) => {
   const [octave3, setOctave3] = useState(false);
   const [currentNote, setCurrentNote] = useState('C');
   const [currentOctave, setCurrentOctave] = useState('4');
-  const [volumeText, setVolumeText] = useState('-35');
+  const [volumeText, setVolumeText] = useState('-20');
   const [pitchValue, setPitchValue] = useState(0);
 
   useEffect(() => {
@@ -556,7 +556,7 @@ const IndividualDrone = (props) => {
           texty={'Volume'}
           belongTo={props.name}
           updateVolumeText={updateVolumeText}
-          defaultValue={-35}
+          defaultValue={-20}
           currentVolume={volumeText}
         />
         <br />

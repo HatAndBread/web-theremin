@@ -6,19 +6,19 @@ export const ThereminOptions = (props) => {
   const [square, setSquare] = useState(false);
   const [sawtooth, setSawtooth] = useState(false);
   const [triangle, setTriangle] = useState(false);
-  const [sineVolume, setSineVolume] = useState(-25);
-  const [squareVolume, setSquareVolume] = useState(-25);
-  const [sawtoothVolume, setSawtoothVolume] = useState(-25);
-  const [triangleVolume, setTriangleVolume] = useState(-25);
+  const [sineVolume, setSineVolume] = useState(-10);
+  const [squareVolume, setSquareVolume] = useState(-10);
+  const [sawtoothVolume, setSawtoothVolume] = useState(-10);
+  const [triangleVolume, setTriangleVolume] = useState(-10);
   const [display, setDisplay] = useState('none');
   const [attack, setAttack] = useState(0.7);
   const [sustain, setSustain] = useState(0.3);
   const [decay, setDecay] = useState(0.5);
   const [release, setRelease] = useState(0.7);
-  const [sineVolumeText, setSineVolumeText] = useState('-25dB');
-  const [squareVolumeText, setSquareVolumeText] = useState('-25dB');
-  const [sawtoothVolumeText, setSawtoothVolumeText] = useState('-25dB');
-  const [triangleVolumeText, setTriangleVolumeText] = useState('-25dB');
+  const [sineVolumeText, setSineVolumeText] = useState('-10dB');
+  const [squareVolumeText, setSquareVolumeText] = useState('-10dB');
+  const [sawtoothVolumeText, setSawtoothVolumeText] = useState('-10dB');
+  const [triangleVolumeText, setTriangleVolumeText] = useState('-10dB');
   const [attackText, setAttackText] = useState('.7');
   const [sustainText, setSustainText] = useState('0.7');
   const [decayText, setDecayText] = useState('.1');
@@ -132,7 +132,7 @@ export const ThereminOptions = (props) => {
             changeVolume={changeVolume}
             min={-50}
             max={0}
-            defaultValue={-25}
+            defaultValue={-10}
             name="sine"
             volumeText={sineVolumeText}
           />
@@ -144,7 +144,7 @@ export const ThereminOptions = (props) => {
             changeVolume={changeVolume}
             min={-50}
             max={0}
-            defaultValue={-25}
+            defaultValue={-10}
             name="square"
             volumeText={squareVolumeText}
           />
@@ -156,7 +156,7 @@ export const ThereminOptions = (props) => {
             changeVolume={changeVolume}
             min={-50}
             max={0}
-            defaultValue={-25}
+            defaultValue={-10}
             name="sawtooth"
             volumeText={sawtoothVolumeText}
           />
@@ -168,7 +168,7 @@ export const ThereminOptions = (props) => {
             changeVolume={changeVolume}
             min={-50}
             max={0}
-            defaultValue={-25}
+            defaultValue={-10}
             name="triangle"
             volumeText={triangleVolumeText}
           />

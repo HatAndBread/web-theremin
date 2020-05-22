@@ -433,7 +433,6 @@ const MasterVolume = (props) => {
 };
 
 const Latency = (props) => {
-  const [selected, setSelected] = useState('balanced');
   const onChange = (e) => {
     if (e.target.value === 'fast') {
       alert(
@@ -445,14 +444,15 @@ const Latency = (props) => {
     }
   };
   return (
-    <form>
-      <div>Latency:</div>
-      <input id="balanced" name="balanced" type="radio" value="balanced" defaultChecked onChange={onChange}></input>
-      <label htmlFor="balanced">Balanced 😇</label>
-
-      <input id="fast" name="balanced" type="radio" value="fast" onChange={onChange}></input>
-      <label htmlFor="fast">Fast 🚨💀</label>
-    </form>
+    <div>
+      <form>
+        <div>Latency:</div>
+        <input id="fast" name="latency" type="radio" value="fast" onChange={onChange} defaultChecked></input>
+        <label htmlFor="fast">Fast 🚨💀</label>
+        <input id="balanced" name="latency" type="radio" value="balanced" onChange={onChange}></input>
+        <label htmlFor="balanced">Balanced 😇</label>
+      </form>
+    </div>
   );
 };
 
@@ -462,5 +462,5 @@ const StopChords = (props) => {
     stopDrone('Drone 2');
     stopDrone('Drone 3');
   };
-  return <button onClick={stop}>⏸Chords</button>;
+  return <button onClick={stop}>⏹Chords</button>;
 };
