@@ -12,7 +12,7 @@ export const ThereminOptions = (props) => {
   const [triangleVolume, setTriangleVolume] = useState(-10);
   const [display, setDisplay] = useState('none');
   const [attack, setAttack] = useState(0.7);
-  const [sustain, setSustain] = useState(0.3);
+  const [sustain, setSustain] = useState(0.7);
   const [decay, setDecay] = useState(0.5);
   const [release, setRelease] = useState(0.7);
   const [sineVolumeText, setSineVolumeText] = useState('-10dB');
@@ -23,8 +23,41 @@ export const ThereminOptions = (props) => {
   const [sustainText, setSustainText] = useState('0.7');
   const [decayText, setDecayText] = useState('.1');
   const [releaseText, setReleaseText] = useState('.7');
+  const [forceSineChecked, setForceSineChecked] = useState(true);
+  const [forceSquareChecked, setForceSquareChecked] = useState(false);
+  const [forceSawtoothChecked, setForceSawtoothChecked] = useState(false);
+  const [forceTriangleChecked, setForceTriangleChecked] = useState(false);
+  const [forceChangesOnPresetReceived, setForceChangesOnPresetReceived] = useState(false);
 
+  const revertBackToNoPreset = () => {
+    setForceChangesOnPresetReceived(false);
+  };
   useEffect(() => {
+    setSineVolumeText(sineVolume + 'dB');
+    setSquareVolumeText(squareVolume + 'db');
+    setSawtoothVolumeText(sawtoothVolume + 'db');
+    setTriangleVolumeText(triangleVolume + 'db');
+    if (props.needUpdate) {
+      console.log(props.updateJason);
+      props.updateCompleted('theremin settings');
+      setSine(props.updateJason.thereminSettings.sine);
+      setSquare(props.updateJason.thereminSettings.square);
+      setSawtooth(props.updateJason.thereminSettings.sawtooth);
+      setTriangle(props.updateJason.thereminSettings.triangle);
+      setSineVolume(props.updateJason.thereminSettings.sineVolume);
+      setSquareVolume(props.updateJason.thereminSettings.squareVolume);
+      setSawtoothVolume(props.updateJason.thereminSettings.sawtoothVolume);
+      setTriangleVolume(props.updateJason.thereminSettings.triangleVolume);
+      setAttack(props.updateJason.thereminSettings.attack);
+      setDecay(props.updateJason.thereminSettings.decay);
+      setRelease(props.updateJason.thereminSettings.release);
+      setSustain(props.updateJason.thereminSettings.sustain);
+      setForceSineChecked(props.updateJason.thereminSettings.sine);
+      setForceSquareChecked(props.updateJason.thereminSettings.square);
+      setForceSawtoothChecked(props.updateJason.thereminSettings.sawtooth);
+      setForceTriangleChecked(props.updateJason.thereminSettings.triangle);
+      setForceChangesOnPresetReceived(true);
+    }
     setDisplay(props.display);
     UpdateThereminData({
       sine,
@@ -44,6 +77,7 @@ export const ThereminOptions = (props) => {
     updateTheremin();
   }, [
     props.display,
+    props.needUpdate,
     sine,
     square,
     sawtooth,
@@ -96,19 +130,19 @@ export const ThereminOptions = (props) => {
         setTriangleVolumeText(amount + 'dB');
         break;
       case 'attack':
-        setAttack(amount * 0.01);
+        setAttack(amount);
         setAttackText(Number(amount));
         break;
       case 'sustain':
-        setSustain(amount * 0.1);
+        setSustain(amount);
         setSustainText(Number(amount));
         break;
       case 'decay':
-        setDecay(amount * 0.01);
+        setDecay(amount);
         setDecayText(Number(amount));
         break;
       case 'release':
-        setRelease(amount * 0.01);
+        setRelease(amount);
         setReleaseText(Number(amount));
         break;
       default:
@@ -119,6 +153,22 @@ export const ThereminOptions = (props) => {
   const hide = () => {
     props.hide();
   };
+  const handleWaveSelectorChange = (name) => {
+    switch (name) {
+      case 'sine':
+        forceSineChecked ? setForceSineChecked(false) : setForceSineChecked(true);
+        break;
+      case 'square':
+        forceSquareChecked ? setForceSquareChecked(false) : setForceSquareChecked(true);
+        break;
+      case 'sawtooth':
+        forceSawtoothChecked ? setForceSawtoothChecked(false) : setForceSawtoothChecked(true);
+        break;
+      case 'triangle':
+        forceTriangleChecked ? setForceTriangleChecked(false) : setForceTriangleChecked(true);
+        break;
+    }
+  };
   return (
     <div style={{ display: props.display }}>
       <div
@@ -127,105 +177,258 @@ export const ThereminOptions = (props) => {
         }}
       >
         <div style={{ borderStyle: 'groove', borderColor: 'slategrey' }}>
-          <WaveSelector setWave={setWave} name="sine" startChecked={true} texty={'Sine'} />
-          <Fader
-            changeVolume={changeVolume}
-            min={-50}
-            max={0}
-            defaultValue={-10}
-            name="sine"
-            volumeText={sineVolumeText}
-          />
+          <div>
+            <WaveSelector
+              setWave={setWave}
+              name="sine"
+              checked={forceSineChecked}
+              texty={'Sine'}
+              handleWaveSelectorChange={handleWaveSelectorChange}
+            />
+            {!forceChangesOnPresetReceived ? (
+              <Fader
+                changeVolume={changeVolume}
+                min={-60}
+                max={0}
+                defaultValue={sineVolume}
+                name="sine"
+                volumeText={sineVolumeText}
+              />
+            ) : (
+              <ControlledFader
+                changeVolume={changeVolume}
+                min={-60}
+                max={0}
+                name="sine"
+                value={sineVolume}
+                volumeText={sineVolumeText}
+                revertBackToNoPreset={revertBackToNoPreset}
+              />
+            )}
+          </div>
         </div>
         <div style={{ borderStyle: 'groove', borderColor: 'slategrey' }}>
-          <WaveSelector setWave={setWave} name="square" startChecked={false} texty={'Square'} />
-
-          <Fader
-            changeVolume={changeVolume}
-            min={-50}
-            max={0}
-            defaultValue={-10}
-            name="square"
-            volumeText={squareVolumeText}
-          />
+          <div>
+            <WaveSelector
+              setWave={setWave}
+              name="square"
+              checked={forceSquareChecked}
+              texty={'Square'}
+              handleWaveSelectorChange={handleWaveSelectorChange}
+            />
+            {!forceChangesOnPresetReceived ? (
+              <Fader
+                changeVolume={changeVolume}
+                min={-60}
+                max={0}
+                defaultValue={squareVolume}
+                name="square"
+                volumeText={squareVolumeText}
+              />
+            ) : (
+              <ControlledFader
+                changeVolume={changeVolume}
+                min={-60}
+                max={0}
+                name="square"
+                value={squareVolume}
+                volumeText={squareVolumeText}
+                revertBackToNoPreset={revertBackToNoPreset}
+              />
+            )}
+          </div>
         </div>
         <div style={{ borderStyle: 'groove', borderColor: 'slategrey' }}>
-          <WaveSelector setWave={setWave} name="sawtooth" startChecked={false} texty={'Sawtooth'} />
-
-          <Fader
-            changeVolume={changeVolume}
-            min={-50}
-            max={0}
-            defaultValue={-10}
-            name="sawtooth"
-            volumeText={sawtoothVolumeText}
-          />
+          <div>
+            <WaveSelector
+              setWave={setWave}
+              name="sawtooth"
+              checked={forceSawtoothChecked}
+              texty={'Sawtooth'}
+              handleWaveSelectorChange={handleWaveSelectorChange}
+            />
+            {!forceChangesOnPresetReceived ? (
+              <Fader
+                changeVolume={changeVolume}
+                min={-60}
+                max={0}
+                defaultValue={sawtoothVolume}
+                name="sawtooth"
+                volumeText={sawtoothVolumeText}
+              />
+            ) : (
+              <ControlledFader
+                changeVolume={changeVolume}
+                min={-60}
+                max={0}
+                name="sawtooth"
+                value={sawtoothVolume}
+                volumeText={sawtoothVolumeText}
+                revertBackToNoPreset={revertBackToNoPreset}
+              />
+            )}
+          </div>
         </div>
         <div style={{ borderStyle: 'groove', borderColor: 'slategrey' }}>
-          <WaveSelector setWave={setWave} name="triangle" startChecked={false} texty={'Triangle'} />
-
-          <Fader
-            changeVolume={changeVolume}
-            min={-50}
-            max={0}
-            defaultValue={-10}
-            name="triangle"
-            volumeText={triangleVolumeText}
-          />
+          <div>
+            <WaveSelector
+              setWave={setWave}
+              name="triangle"
+              checked={forceTriangleChecked}
+              texty={'Triangle'}
+              handleWaveSelectorChange={handleWaveSelectorChange}
+            />
+            {!forceChangesOnPresetReceived ? (
+              <Fader
+                changeVolume={changeVolume}
+                min={-60}
+                max={0}
+                defaultValue={triangleVolume}
+                name="triangle"
+                volumeText={triangleVolumeText}
+              />
+            ) : (
+              <ControlledFader
+                changeVolume={changeVolume}
+                min={-60}
+                max={0}
+                value={triangleVolume}
+                revertBackToNoPreset={revertBackToNoPreset}
+                name="triangle"
+                volumeText={triangleVolumeText}
+              />
+            )}
+          </div>
         </div>
       </div>
       <div style={{ display: 'inline-flex' }}>
         <div style={{ borderStyle: 'groove', borderColor: 'slategrey' }}>
-          <label>Attack</label>
-          <Fader
-            changeVolume={changeVolume}
-            min={0}
-            max={100}
-            step={5}
-            name="attack"
-            defaultValue={70}
-            volumeText={attackText}
-            texty={'Attack'}
-          />
+          {!forceChangesOnPresetReceived ? (
+            <div>
+              <label>Attack</label>
+              <Fader
+                changeVolume={changeVolume}
+                min={0}
+                max={1}
+                step={0.01}
+                name="attack"
+                defaultValue={attack}
+                volumeText={attack}
+                texty={'Attack'}
+              />
+            </div>
+          ) : (
+            <div>
+              <label>Attack</label>
+              <ControlledFader
+                changeVolume={changeVolume}
+                min={0}
+                max={1}
+                step={0.01}
+                name="attack"
+                value={attack}
+                volumeText={attack}
+                revertBackToNoPreset={revertBackToNoPreset}
+                texty={'Attack'}
+              />
+            </div>
+          )}
         </div>
         <div style={{ borderStyle: 'groove', borderColor: 'slategrey' }}>
-          <label>Sustain</label>
-          <Fader
-            changeVolume={changeVolume}
-            min={0}
-            max={10}
-            step={3}
-            name="sustain"
-            defaultValue={7}
-            volumeText={sustainText}
-            texty={'Sustain'}
-          />
+          {!forceChangesOnPresetReceived ? (
+            <div>
+              <label>Sustain</label>
+              <Fader
+                changeVolume={changeVolume}
+                min={0}
+                max={1}
+                step={0.01}
+                name="sustain"
+                defaultValue={sustain}
+                volumeText={sustain}
+                texty={'Sustain'}
+              />
+            </div>
+          ) : (
+            <div>
+              <label>Sustain</label>
+              <ControlledFader
+                changeVolume={changeVolume}
+                min={0}
+                max={1}
+                step={0.01}
+                name="sustain"
+                value={sustain}
+                volumeText={sustain}
+                texty={'Sustain'}
+                revertBackToNoPreset={revertBackToNoPreset}
+              />
+            </div>
+          )}
         </div>
         <div style={{ borderStyle: 'groove', borderColor: 'slategrey' }}>
-          <label>Decay</label>
-          <Fader
-            changeVolume={changeVolume}
-            min={0}
-            max={100}
-            step={1}
-            name="decay"
-            defaultValue={50}
-            volumeText={decayText}
-            texty={'Decay'}
-          />
+          {!forceChangesOnPresetReceived ? (
+            <div>
+              <label>Decay</label>
+              <Fader
+                changeVolume={changeVolume}
+                min={0}
+                max={1}
+                step={0.01}
+                name="decay"
+                defaultValue={decay}
+                volumeText={decay}
+                texty={'Decay'}
+              />
+            </div>
+          ) : (
+            <div>
+              <label>Decay</label>
+              <ControlledFader
+                changeVolume={changeVolume}
+                min={0}
+                max={1}
+                step={0.01}
+                name="decay"
+                value={decay}
+                volumeText={decay}
+                texty={'Decay'}
+                revertBackToNoPreset={revertBackToNoPreset}
+              />
+            </div>
+          )}
         </div>
         <div style={{ borderStyle: 'groove', borderColor: 'slategrey' }}>
-          <label>Release</label>
-          <Fader
-            changeVolume={changeVolume}
-            min={1}
-            max={100}
-            step={1}
-            name="release"
-            defaultValue={75}
-            volumeText={releaseText}
-            texty={'Release'}
-          />
+          {!forceChangesOnPresetReceived ? (
+            <div>
+              <label>Release</label>
+              <Fader
+                changeVolume={changeVolume}
+                min={0.01}
+                max={1}
+                step={0.01}
+                name="release"
+                defaultValue={release}
+                volumeText={release}
+                texty={'Release'}
+              />
+            </div>
+          ) : (
+            <div>
+              <label>Release</label>
+              <ControlledFader
+                changeVolume={changeVolume}
+                min={0.01}
+                max={1}
+                step={0.01}
+                name="release"
+                value={release}
+                volumeText={release}
+                texty={'Release'}
+                revertBackToNoPreset={revertBackToNoPreset}
+              />
+            </div>
+          )}
         </div>
       </div>
       <br></br>
@@ -250,6 +453,7 @@ const Fader = (props) => {
         max={props.max}
         onChange={volumeChange}
         defaultValue={props.defaultValue}
+        step={props.step}
       />
       <br></br>
       <label>{props.volumeText}</label>
@@ -259,20 +463,42 @@ const Fader = (props) => {
 
 Fader.defaultProps = { default: 0 };
 
-const WaveSelector = (props) => {
-  const [checked, setChecked] = useState(props.startChecked);
+const ControlledFader = (props) => {
+  const volumeChange = (e) => {
+    let type = props.name;
+    let newVolume = e.target.value;
+    props.changeVolume(type, newVolume);
+    props.revertBackToNoPreset();
+  };
+  return (
+    <div>
+      <input
+        className="fader"
+        type="range"
+        min={props.min}
+        max={props.max}
+        onChange={volumeChange}
+        value={props.value}
+        step={props.step}
+      />
+      <br></br>
+      <label>{props.volumeText}</label>
+    </div>
+  );
+};
 
+const WaveSelector = (props) => {
   const waveChange = () => {
-    checked ? setChecked(false) : setChecked(true);
     let value = props.name;
+    props.handleWaveSelectorChange(value);
     props.setWave(value);
-    if (props.startChecked) {
+    if (props.forceChecked) {
     }
   };
   return (
     <div>
       <label>{props.texty}</label>
-      <input type="checkbox" onChange={waveChange} checked={checked} />
+      <input type="checkbox" onClick={waveChange} checked={props.checked} />
     </div>
   );
 };

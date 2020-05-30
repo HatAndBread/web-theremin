@@ -1851,6 +1851,7 @@ export const s2pd = {
     let canvasPos = s2pd.canvas.getBoundingClientRect();
     s2pd.mouseXcurrent = Math.floor(event.clientX - canvasPos.left);
     s2pd.mouseYcurrent = Math.floor(event.clientY - canvasPos.top);
+
     if (s2pd.dragStarted) {
       let canvasPos = s2pd.canvas.getBoundingClientRect();
       s2pd.mouseX = Math.floor(event.clientX - canvasPos.left);
@@ -2039,6 +2040,7 @@ document.addEventListener(
   'touchstart',
   function (e) {
     // Cache the client X/Y coordinates
+
     s2pd.touchDetected = true;
     let canvasPos = s2pd.canvas.getBoundingClientRect();
     s2pd.touchX = Math.floor(e.touches[0].clientX - canvasPos.left);

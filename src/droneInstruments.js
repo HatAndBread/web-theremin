@@ -17,9 +17,15 @@ export const changeMaster = (value) => {
   console.log(value);
 };
 
+export const analyser = new Tone.Analyser({
+  size: 16,
+  type: 'fft',
+  smoothing: 0.8
+}).toMaster();
+
 export const theLimiter = new Tone.Limiter({
   threshold: -12
-}).toMaster();
+}).connect(analyser);
 
 const droneCrusher = new Tone.BitCrusher(8);
 

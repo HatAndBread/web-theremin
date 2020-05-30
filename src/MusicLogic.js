@@ -1,7 +1,8 @@
 import * as Tone from 'tone';
 import { s2pd } from './s2pd.js';
 import { friends } from './friends.js';
-import { changeDroneIntonation, theLimiter } from './droneInstruments';
+import { changeDroneIntonation, theLimiter, analyser } from './droneInstruments';
+import { changeSpeechVolume } from './Speaking';
 
 /////****************************************SCREEN */
 let toolbarSize = 0;
@@ -101,6 +102,7 @@ const removeInfinity = () => {
   console.log(currentSynth);
   currentSynth.forEach((index) => {
     index.triggerRelease(thereminData.trailOff);
+
     setTimeout(function () {
       index.dispose();
     }, thereminData.trailOff * 5000);
@@ -119,8 +121,44 @@ export const addInfinity = () => {
     thereminData.intinityMachineFirstTime = false;
   }
 };
+// ******TALKING*******
 
+let speaking = false;
+const speech = new s2pd.Text(
+  'speech',
+  '',
+  0,
+  100,
+  'Arial',
+  36,
+  `rgb(${s2pd.randomBetween(100, 255)},${s2pd.randomBetween(100, 255)},${s2pd.randomBetween(100, 255)})`,
+  3,
+  s2pd.getRandomColor()
+);
+speech.wrap();
+
+export const speechText = (newText) => {
+  speech.color = `rgb(${s2pd.randomBetween(100, 255)},${s2pd.randomBetween(100, 255)},${s2pd.randomBetween(100, 255)})`;
+  speech.innerColor = `rgb(${s2pd.randomBetween(100, 255)},${s2pd.randomBetween(100, 255)},${s2pd.randomBetween(
+    100,
+    255
+  )})`;
+  speech.text = newText;
+  speech.rightLimit = s2pd.width;
+  speech.makeArray();
+};
 ////************************************GAME VARIABLES */
+export const voiceControllerMover = () => {
+  console.log('MOOOOOOVE');
+  if (voiceController.xPos < 0) {
+    voiceController.xPos = s2pd.width / 2;
+    voiceController.yPos = s2pd.height / 2;
+  } else {
+    voiceController.xPos = -1000;
+  }
+};
+const voiceController = new s2pd.Text('voiceController', '🤖', -300, 100, 'Georgia', 100);
+voiceController.makeDraggable();
 const mike = new s2pd.Text('Mike', '🎤', -1000, -10000, 'Georgia', 100);
 const pinkDude = new s2pd.Text('pinkDude', '🙉', -10000, -10000, 'Georgia', 100);
 pinkDude.makeDraggable();
@@ -301,19 +339,26 @@ const pinky = new Tone.Noise({
     sustain: 0
   }
 });
+const squeel = new Tone.Oscillator(s2pd.randomBetween(0, 2000), 'sine');
+const squeel2 = new Tone.Oscillator(s2pd.randomBetween(0, 300), 'square');
+squeel.volume.value = -10;
+squeel2.volume.value = -10;
 const noisePitchShifter = new Tone.PitchShift();
 const noiseDistortion = new Tone.Distortion();
 const noiseCrusher = new Tone.BitCrusher();
-noiseCrusher.bits = 6;
+noiseCrusher.bits = 8;
 const noiseVolume = new Tone.Volume(-20);
 pinky.chain(noisePitchShifter, noiseDistortion, noiseCrusher, noiseVolume);
-pinky.start();
+squeel.chain(noiseDistortion, noiseCrusher, noiseVolume);
+squeel2.chain(noiseDistortion, noiseCrusher, noiseVolume);
 
 let noiseOn = false;
 export const turnNoiseOn = () => {
   pinkDude.xPos = s2pd.width / 2;
   pinkDude.yPos = 100;
   pinky.start();
+  squeel.start();
+  squeel2.start();
   noiseOn = true;
   noiseVolume.connect(theLimiter);
 };
@@ -323,6 +368,10 @@ export const turnNoiseOff = () => {
   pinkDude.yPos = -10000;
   pinky.stop();
   noiseVolume.disconnect();
+  squeel.stop();
+
+  squeel2.stop();
+
   noiseOn = false;
   initialize();
 };
@@ -568,6 +617,7 @@ const drawBoard = (whichArray) => {
       s2pd.height,
       fretPainter(i)
     );
+    fret.opacity = 0.5;
     s2pd.finalize(fret);
     frets.push(fret);
 
@@ -587,6 +637,7 @@ const drawBoard = (whichArray) => {
   }
   for (let i = 0; i < whichArray.length; i++) {
     const fret = new s2pd.Rectangle('fret', 523.26 * whichArray[i], 0, fretThickener(i), s2pd.height, fretPainter(i));
+    fret.opacity = 0.5;
     s2pd.finalize(fret);
     frets.push(fret);
     const noteText = new s2pd.Text(
@@ -612,6 +663,7 @@ const drawBoard = (whichArray) => {
       s2pd.height,
       fretPainter(i)
     );
+    fret.opacity = 0.5;
     s2pd.finalize(fret);
     frets.push(fret);
     const noteText = new s2pd.Text(
@@ -633,10 +685,12 @@ drawBoard(justRatios);
 
 ///******** FINALIZE Z ORDER OF VISUALS */
 s2pd.finalize(pedalDude);
+s2pd.finalize(voiceController);
 s2pd.finalize(thereminDude);
 mike.makeDraggable();
 s2pd.finalize(mike);
 s2pd.finalize(pinkDude);
+s2pd.finalize(speech);
 
 //*********************CREATE SYNTHS*************////
 //*********************CREATE SYNTHS*************////
@@ -712,6 +766,7 @@ export const onBeingLetUp = (heldObject) => {
           for (let i = 0; i < howManyThingsToPop(); i++) {
             let lastSynth = currentSynth.pop();
             lastSynth.triggerRelease(thereminData.trailOff);
+
             setTimeout(function () {
               lastSynth.dispose();
               console.log('this is the synth array: ');
@@ -723,6 +778,7 @@ export const onBeingLetUp = (heldObject) => {
           for (let i = 0; i < howManyThingsToPop(); i++) {
             let lastSynth = currentSynth.pop();
             lastSynth.triggerRelease(thereminData.trailOff);
+
             setTimeout(function () {
               lastSynth.dispose();
               console.log('this is the synth array: ');
@@ -754,16 +810,32 @@ export const onBeingHeldDown = (heldObject) => {
         }
       }).connect(dist);
       if (thereminData.sine) {
-        freshSynth.volume.value = thereminData.sineVolume;
+        if (thereminDude.yPos < 350) {
+          freshSynth.volume.rampTo(Math.floor(thereminDude.yPos * -0.15), 0.05);
+        } else {
+          freshSynth.volume.value = -53;
+        }
       }
       if (thereminData.square) {
-        freshSynth.volume.value = thereminData.squareVolume;
+        if (thereminDude.yPos < 350) {
+          freshSynth.volume.rampTo(Math.floor(thereminDude.yPos * -0.15), 0.05);
+        } else {
+          freshSynth.volume.value = -53;
+        }
       }
       if (thereminData.sawtooth) {
-        freshSynth.volume.value = thereminData.sawtoothVolume;
+        if (thereminDude.yPos < 350) {
+          freshSynth.volume.rampTo(Math.floor(thereminDude.yPos * -0.15), 0.05);
+        } else {
+          freshSynth.volume.value = -53;
+        }
       }
       if (thereminData.triangle) {
-        freshSynth.volume.value = thereminData.triangleVolume;
+        if (thereminDude.yPos < 350) {
+          freshSynth.volume.rampTo(Math.floor(thereminDude.yPos * -0.15), 0.05);
+        } else {
+          freshSynth.volume.value = -53;
+        }
       }
       freshSynth.triggerAttack(returnStartFrequency(thereminData.octaveChanger));
       currentSynth.unshift(freshSynth);
@@ -774,7 +846,13 @@ export const onBeingHeldDown = (heldObject) => {
     }
   };
   if (heldObject === musicBoard) {
-    if (!thereminData.pedalToneAdded && !thereminData.infinityMachine && currentSynth.length === 0) {
+    if (
+      !thereminData.pedalToneAdded &&
+      !thereminData.infinityMachine &&
+      !pinkDude.dragging &&
+      !voiceController.dragging &&
+      currentSynth.length === 0
+    ) {
       if (thereminData.sine) {
         ////// If user holds on canvas create new synths.
 
@@ -899,15 +977,59 @@ export const gameLoop = () => {
   //**********************//**********************
   //**********************
 
+  if (currentSynth.length > 0) {
+    currentSynth.forEach((item) => {
+      if (thereminDude.yPos < 350) {
+        item.volume.value = Math.floor(thereminDude.yPos * -0.15);
+      } else {
+        item.volume.value = -53;
+      }
+    });
+  }
+
   noteGarbage.forEach((index) => (index.color = s2pd.getRandomColor()));
 
   if (thereminData.randomWarble) {
     warble = s2pd.randomBetween(-thereminData.randomWarbleValue, thereminData.randomWarbleValue);
     frequencyChanger(warble, thereminData.octaveChanger);
   }
-
+  if (pinkDude.dragging) {
+    squeel.frequency.value += s2pd.randomBetween(s2pd.randomBetween(-40, -30), 60);
+    squeel2.frequency.value += s2pd.randomBetween(s2pd.randomBetween(-60, -40), s2pd.randomBetween(35, 44));
+  }
   if (noiseOn) {
+    let squeelRan = s2pd.randomBetween(0, 800);
+    if (squeelRan === 1) {
+      squeel.frequency.value = s2pd.randomBetween(1, 3000);
+    } else if (squeelRan === 2) {
+      squeel.frequency.value = s2pd.randomBetween(1, 200);
+    } else if (squeelRan === 3) {
+      squeel2.frequency.value = s2pd.randomBetween(1, 500);
+    } else if (squeelRan === 4) {
+      squeel.volume.value = -100;
+    } else if (squeelRan === 5) {
+      squeel2.volume.value = -100;
+    } else if (squeelRan === 6) {
+      squeel2.volume.value = -10;
+    } else if (squeelRan === 7) {
+      squeel.volume.value = -10;
+    } else if (squeelRan === 8) {
+      squeel.frequency.value += 900;
+    } else if (squeelRan === 9) {
+      squeel2.frequency.value += 900;
+    } else if (squeelRan === 10) {
+      squeel.frequency.value -= 900;
+    } else if (squeelRan === 11) {
+      squeel2.frequency.value -= 900;
+    } else {
+      squeel.frequency.value += s2pd.randomBetween(-22, 20);
+      squeel2.frequency.value += s2pd.randomBetween(-20, 22);
+    }
+    if (pinkDude.xPos > 500 && pinkDude.xPos < 600) {
+      squeel2.frequency.value += s2pd.randomBetween(0, 300);
+    }
     noiseVolume.volume.value = Math.floor(pinkDude.yPos / 10) * -1;
+
     let noiseRan = s2pd.randomBetween(0, Math.floor(pinkDude.xPos / 20));
     if (noiseRan === 3) {
       pinky.type = 'white';
@@ -962,6 +1084,17 @@ export const gameLoop = () => {
     )})`;
     thereminDude.radius -= 0.3 + s2pd.randomBetween(-0.5, 0.5);
     thereminDude.thickness = s2pd.randomBetween(1, 30);
+  }
+  if (voiceController.dragging) {
+    changeSpeechVolume(voiceController.yPos * 0.05, voiceController.xPos);
+    speech.color = `rgb(${s2pd.randomBetween(100, 255)},${s2pd.randomBetween(100, 255)},${s2pd.randomBetween(
+      100,
+      255
+    )})`;
+    speech.innerColor = `rgb(${s2pd.randomBetween(100, 255)},${s2pd.randomBetween(100, 255)},${s2pd.randomBetween(
+      100,
+      255
+    )})`;
   }
 
   //********************GET PRIOR POSITION OF USER FINGER ************************************ */
@@ -1026,6 +1159,7 @@ if (!justIntonation) {
 }
 s2pd.canvas.style.backgroundColor = `rgb(30,10,10)`;
 
+gameLoop();
 gameLoop();
 gameLoop();
 gameLoop();

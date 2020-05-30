@@ -8,6 +8,7 @@ import { makePedalTone, addInfinity, toolbarSizeChanged, startApp } from './Musi
 import { changeLatency, changeMaster, stopDrone } from './droneInstruments';
 import { ThereminEffects } from './ThereminEffects';
 import { DroneEffects } from './DroneEffects';
+import { Presets } from './Presets';
 import * as Tone from 'tone';
 
 export class ToolBar extends React.Component {
@@ -30,7 +31,10 @@ export class ToolBar extends React.Component {
       pedalText: 'Add P.Tone',
       infinityText: '∞ On',
       startedStyle: 'none',
-      buttonDisplay: ''
+      buttonDisplay: '',
+      thereminSettingsNeedUpdate: false,
+      thereminEffectsNeedUpdate: false,
+      updateJason: {} // the preset JSON object to send to the instruments
     };
     this.openSettings = this.openSettings.bind(this);
     this.hideThereminSettings = this.hideThereminSettings.bind(this);
@@ -43,6 +47,8 @@ export class ToolBar extends React.Component {
     this.hideMasterSettings = this.hideMasterSettings.bind(this);
     this.startMusic = this.startMusic.bind(this);
     this.handleResize = this.handleResize.bind(this);
+    this.incomingPresetUpdate = this.incomingPresetUpdate.bind(this); // when a request to change to a preset is received
+    this.updateCompleted = this.updateCompleted.bind(this); ///when preset has finished being updated
     this.startButtText = 'LOAD AUDIO AND START';
 
     this.myDiv = React.createRef();
@@ -52,7 +58,23 @@ export class ToolBar extends React.Component {
     toolbarSizeChanged(this.myDiv.current.offsetHeight);
     window.removeEventListener('resize', this.handleResize);
   }
+  incomingPresetUpdate(jason) {
+    console.log(jason);
+    this.setState({ updateJason: jason });
+    this.setState({ thereminSettingsNeedUpdate: true });
+    this.setState({ thereminEffectsNeedUpdate: true });
+  }
+  updateCompleted(which) {
+    switch (which) {
+      case 'theremin settings':
+        this.setState({ thereminSettingsNeedUpdate: false });
+        break;
+      case 'theremin effects':
+        this.setState({ thereminEffectsNeedUpdate: false });
 
+        break;
+    }
+  }
   openSettings(whatToOpen) {
     switch (whatToOpen) {
       case 'advanced':
@@ -225,6 +247,9 @@ export class ToolBar extends React.Component {
           this.setState({ infinityText: '∞ On' });
         }
         break;
+      case 'restart':
+        window.location.reload();
+        break;
       case 'pedal':
         makePedalTone();
         if (this.state.pedalText === 'Add P.Tone') {
@@ -297,6 +322,7 @@ export class ToolBar extends React.Component {
               <ToolbarButt name="Drone Effects" which="droneEffects" openSettings={this.openSettings} />
               <ToolbarButt name="Intonation" which="harmony" openSettings={this.openSettings} />
               <ToolbarButt name="Master" which="master" openSettings={this.openSettings} />
+              <ToolbarButt name="Reload" which="restart" openSettings={this.openSettings} />
             </div>
           </div>
           <span role="img" aria-label="pretty">
@@ -309,10 +335,24 @@ export class ToolBar extends React.Component {
             <ToolbarButt name={this.state.pedalText} which="pedal" openSettings={this.openSettings} />
             <ToolbarButt name={this.state.infinityText} which="infinity" openSettings={this.openSettings} />
             <ToolbarButt name="NOISE" which="noise" openSettings={this.openSettings} />
+            <Presets incomingPresetUpdate={this.incomingPresetUpdate}></Presets>
           </div>
-          <ThereminOptions display={this.state.thereminSettingsDisplay} hide={this.hideThereminSettings} />
-          <ThereminEffects display={this.state.effectsSettingsDisplay} hide={this.hideThereminEffects} />
+          <ThereminOptions
+            updateJason={this.state.updateJason}
+            needUpdate={this.state.thereminSettingsNeedUpdate}
+            updateCompleted={this.updateCompleted}
+            display={this.state.thereminSettingsDisplay}
+            hide={this.hideThereminSettings}
+          />
+          <ThereminEffects
+            updateJason={this.state.updateJason}
+            needUpdate={this.state.thereminEffectsNeedUpdate}
+            updateCompleted={this.updateCompleted}
+            display={this.state.effectsSettingsDisplay}
+            hide={this.hideThereminEffects}
+          />
           <MasterSettings display={this.state.masterSettingsDisplay} hide={this.hideMasterSettings} />
+
           <DroneEffects display={this.state.droneEffectsDisplay} hide={this.hideDroneEffectsSettings} />
           <HarmonySettings display={this.state.harmonySettingsDisplay} hide={this.hideHarmonySettings} />
           <Noise display={this.state.noiseSettingsDisplay} hide={this.hideNoiseSettings} />
